@@ -16,85 +16,178 @@ export type Database = {
     Tables: {
       grand_paintings: {
         Row: {
+          artist_name: string
+          barcode: string | null
           created_at: string
           description: string
+          has_certificate: boolean
+          height_cm: number | null
           id: string
           image_url: string
+          is_featured: boolean
           is_published: boolean
+          item_code: string | null
+          long_description: string
+          medium: string
           name: string
           price_usd_cents: number
           price_zar_cents: number
+          scene_location: string
+          signed_by: string
+          sku: string | null
           slot_number: number
+          sort_order: number
           stock: number
+          tags: string[]
           updated_at: string
+          weight_grams: number | null
+          width_cm: number | null
+          year_created: number | null
         }
         Insert: {
+          artist_name?: string
+          barcode?: string | null
           created_at?: string
           description?: string
+          has_certificate?: boolean
+          height_cm?: number | null
           id?: string
           image_url: string
+          is_featured?: boolean
           is_published?: boolean
+          item_code?: string | null
+          long_description?: string
+          medium?: string
           name?: string
           price_usd_cents?: number
           price_zar_cents?: number
+          scene_location?: string
+          signed_by?: string
+          sku?: string | null
           slot_number: number
+          sort_order?: number
           stock?: number
+          tags?: string[]
           updated_at?: string
+          weight_grams?: number | null
+          width_cm?: number | null
+          year_created?: number | null
         }
         Update: {
+          artist_name?: string
+          barcode?: string | null
           created_at?: string
           description?: string
+          has_certificate?: boolean
+          height_cm?: number | null
           id?: string
           image_url?: string
+          is_featured?: boolean
           is_published?: boolean
+          item_code?: string | null
+          long_description?: string
+          medium?: string
           name?: string
           price_usd_cents?: number
           price_zar_cents?: number
+          scene_location?: string
+          signed_by?: string
+          sku?: string | null
           slot_number?: number
+          sort_order?: number
           stock?: number
+          tags?: string[]
           updated_at?: string
+          weight_grams?: number | null
+          width_cm?: number | null
+          year_created?: number | null
         }
         Relationships: []
       }
       samfox_prints: {
         Row: {
+          barcode: string | null
           created_at: string
           description: string
+          edition_number: number | null
+          edition_size: number | null
+          height_cm: number | null
           id: string
           image_url: string
+          is_featured: boolean
           is_published: boolean
+          is_signed: boolean
+          item_code: string | null
+          long_description: string
           name: string
+          paper_type: string | null
           price_usd_cents: number
           price_zar_cents: number
+          print_method: string | null
+          sku: string | null
           slot_number: number
+          sort_order: number
           stock: number
+          tags: string[]
           updated_at: string
+          weight_grams: number | null
+          width_cm: number | null
         }
         Insert: {
+          barcode?: string | null
           created_at?: string
           description?: string
+          edition_number?: number | null
+          edition_size?: number | null
+          height_cm?: number | null
           id?: string
           image_url: string
+          is_featured?: boolean
           is_published?: boolean
+          is_signed?: boolean
+          item_code?: string | null
+          long_description?: string
           name?: string
+          paper_type?: string | null
           price_usd_cents?: number
           price_zar_cents?: number
+          print_method?: string | null
+          sku?: string | null
           slot_number: number
+          sort_order?: number
           stock?: number
+          tags?: string[]
           updated_at?: string
+          weight_grams?: number | null
+          width_cm?: number | null
         }
         Update: {
+          barcode?: string | null
           created_at?: string
           description?: string
+          edition_number?: number | null
+          edition_size?: number | null
+          height_cm?: number | null
           id?: string
           image_url?: string
+          is_featured?: boolean
           is_published?: boolean
+          is_signed?: boolean
+          item_code?: string | null
+          long_description?: string
           name?: string
+          paper_type?: string | null
           price_usd_cents?: number
           price_zar_cents?: number
+          print_method?: string | null
+          sku?: string | null
           slot_number?: number
+          sort_order?: number
           stock?: number
+          tags?: string[]
           updated_at?: string
+          weight_grams?: number | null
+          width_cm?: number | null
         }
         Relationships: []
       }
