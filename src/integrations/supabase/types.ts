@@ -14,6 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
+      grand_paintings: {
+        Row: {
+          created_at: string
+          description: string
+          id: string
+          image_url: string
+          is_published: boolean
+          name: string
+          price_usd_cents: number
+          price_zar_cents: number
+          slot_number: number
+          stock: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          id?: string
+          image_url: string
+          is_published?: boolean
+          name?: string
+          price_usd_cents?: number
+          price_zar_cents?: number
+          slot_number: number
+          stock?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          id?: string
+          image_url?: string
+          is_published?: boolean
+          name?: string
+          price_usd_cents?: number
+          price_zar_cents?: number
+          slot_number?: number
+          stock?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       samfox_prints: {
         Row: {
           created_at: string
