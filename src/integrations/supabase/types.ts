@@ -14,6 +14,99 @@ export type Database = {
   }
   public: {
     Tables: {
+      bashedi_kidswear: {
+        Row: {
+          age_range: string
+          barcode: string | null
+          brand: string
+          color: string
+          cost_price_excl_vat_cents: number
+          created_at: string
+          description: string
+          fabric: string
+          gender: string
+          id: string
+          image_url: string
+          is_featured: boolean
+          is_published: boolean
+          item_code: string | null
+          long_description: string
+          markup_multiplier: number
+          name: string
+          price_usd_cents: number
+          price_zar_cents: number
+          size_label: string
+          sku: string | null
+          slot_number: number
+          sort_order: number
+          stock: number
+          tags: string[]
+          updated_at: string
+          vat_rate: number
+          weight_grams: number | null
+        }
+        Insert: {
+          age_range?: string
+          barcode?: string | null
+          brand?: string
+          color?: string
+          cost_price_excl_vat_cents?: number
+          created_at?: string
+          description?: string
+          fabric?: string
+          gender?: string
+          id?: string
+          image_url: string
+          is_featured?: boolean
+          is_published?: boolean
+          item_code?: string | null
+          long_description?: string
+          markup_multiplier?: number
+          name?: string
+          price_usd_cents?: number
+          price_zar_cents?: number
+          size_label?: string
+          sku?: string | null
+          slot_number: number
+          sort_order?: number
+          stock?: number
+          tags?: string[]
+          updated_at?: string
+          vat_rate?: number
+          weight_grams?: number | null
+        }
+        Update: {
+          age_range?: string
+          barcode?: string | null
+          brand?: string
+          color?: string
+          cost_price_excl_vat_cents?: number
+          created_at?: string
+          description?: string
+          fabric?: string
+          gender?: string
+          id?: string
+          image_url?: string
+          is_featured?: boolean
+          is_published?: boolean
+          item_code?: string | null
+          long_description?: string
+          markup_multiplier?: number
+          name?: string
+          price_usd_cents?: number
+          price_zar_cents?: number
+          size_label?: string
+          sku?: string | null
+          slot_number?: number
+          sort_order?: number
+          stock?: number
+          tags?: string[]
+          updated_at?: string
+          vat_rate?: number
+          weight_grams?: number | null
+        }
+        Relationships: []
+      }
       grand_paintings: {
         Row: {
           artist_name: string
