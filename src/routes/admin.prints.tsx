@@ -5,7 +5,7 @@ import type { Session } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 
-export const Route = createFileRoute("/admin")({
+export const Route = createFileRoute("/admin/prints")({
   head: () => ({ meta: [{ title: "Fruitful · SamFox Admin" }] }),
   component: AdminPage,
 });
