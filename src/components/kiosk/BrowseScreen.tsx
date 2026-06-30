@@ -1,10 +1,12 @@
 import { useState, useMemo } from "react";
 import { CATEGORIES, PRODUCTS, formatZAR, formatUSD, type CategoryId, type Product } from "@/lib/catalog";
 import { FruitfulLogo, FruitfulWordmark } from "./FruitfulLogo";
-import { ShoppingBasket, Plus, Check, MapPin } from "lucide-react";
+import { ShoppingBasket, Plus, Check, MapPin, Info } from "lucide-react";
 import type { CartLine } from "@/lib/kiosk-store";
 import { useSamFoxPrints } from "@/lib/samfox-prints";
-import { useKidswear } from "@/lib/kidswear";
+import { useKidswear, type KidswearProduct } from "@/lib/kidswear";
+import { KidswearDetailScreen } from "./KidswearDetailScreen";
+import { ROTATING_BANNERS } from "@/lib/banners";
 
 type Props = {
   cart: CartLine[];
@@ -16,11 +18,12 @@ type Props = {
 };
 
 export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClose }: Props) {
-  const [active, setActive] = useState<CategoryId>("hats");
+  const [active, setActive] = useState<CategoryId>("kidswear");
+  const [detail, setDetail] = useState<KidswearProduct | null>(null);
   const { products: dbPrints } = useSamFoxPrints();
   const { products: dbKidswear } = useKidswear();
 
-  const items = useMemo(() => {
+  const items = useMemo<Product[]>(() => {
     if (active === "prints") return dbPrints;
     if (active === "kidswear") return dbKidswear;
     return PRODUCTS.filter((p) => p.category === active);
@@ -54,9 +57,32 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         </div>
       </header>
 
+      {/* Banner strip */}
+      <div
+        className="flex shrink-0 gap-3 overflow-x-auto px-4 py-3"
+        style={{ backgroundColor: "var(--mint)", scrollbarWidth: "none" }}
+      >
+        {ROTATING_BANNERS.map((b) => (
+          <div
+            key={b.src}
+            className="relative h-24 w-64 shrink-0 overflow-hidden rounded-2xl shadow-md"
+            style={{ backgroundColor: "var(--cream)" }}
+          >
+            <img src={b.src} alt={b.title} className="h-full w-full object-cover" loading="lazy" draggable={false} />
+            <div
+              className="absolute inset-x-0 bottom-0 px-2 py-1.5 text-[10px] font-bold text-white"
+              style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.7))" }}
+            >
+              <p className="font-display uppercase tracking-widest">{b.title}</p>
+              <p className="truncate opacity-90">{b.subtitle}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Category strip */}
       <nav
-        className="flex shrink-0 gap-2 overflow-x-auto px-4 py-3"
+        className="flex shrink-0 gap-2 overflow-x-auto px-4 pb-3"
         style={{ backgroundColor: "var(--mint)", scrollbarWidth: "none" }}
       >
         {CATEGORIES.map((c) => {
@@ -86,13 +112,20 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
           {items.map((p) => {
             const qty = inCart(p.id);
             const soldOut = p.stock - qty <= 0;
+            const isKidswear = active === "kidswear";
             return (
               <article
                 key={p.id}
                 className="overflow-hidden rounded-3xl bg-card shadow-sm"
                 style={{ border: "1px solid var(--border)" }}
               >
-                <div className="relative aspect-square overflow-hidden" style={{ backgroundColor: "var(--cream)" }}>
+                <button
+                  type="button"
+                  onClick={() => isKidswear && setDetail(p as KidswearProduct)}
+                  className="relative block aspect-square w-full overflow-hidden text-left"
+                  style={{ backgroundColor: "var(--cream)" }}
+                  aria-label={isKidswear ? `View details for ${p.name}` : p.name}
+                >
                   <img
                     src={p.imageUrl}
                     alt={p.name}
@@ -108,6 +141,14 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
                       Featured
                     </span>
                   )}
+                  {isKidswear && (
+                    <span
+                      className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow"
+                      style={{ color: "var(--ink)" }}
+                    >
+                      <Info className="h-4 w-4" />
+                    </span>
+                  )}
                   {soldOut && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/60">
                       <span className="rounded-full bg-white px-3 py-1.5 font-display text-xs font-bold uppercase tracking-wider">
@@ -115,7 +156,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
                       </span>
                     </div>
                   )}
-                </div>
+                </button>
                 <div className="p-3">
                   <h3 className="font-display text-sm font-bold leading-tight line-clamp-2" style={{ color: "var(--ink)" }}>
                     {p.name}
@@ -133,7 +174,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
                         {formatZAR(p.priceZAR)}
                       </p>
                       <p className="text-[10px] font-semibold text-muted-foreground">
-                        {formatUSD(p.priceUSD)} USD
+                        {isKidswear ? "incl. 15% VAT" : `${formatUSD(p.priceUSD)} USD`}
                       </p>
                     </div>
                     <button
@@ -142,7 +183,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
                       onClick={() => onAdd(p)}
                       className="flex h-11 w-11 items-center justify-center rounded-2xl text-white transition-transform active:scale-90 disabled:opacity-30"
                       style={{
-                        backgroundColor: qty > 0 ? "var(--mint-deep)" : "var(--coral)",
+                        backgroundColor: qty > 0 ? "var(--mint-deep, var(--mint))" : "var(--coral)",
                       }}
                       aria-label={`Add ${p.name} to basket`}
                     >
@@ -201,6 +242,16 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
           {itemCount > 0 ? "Review basket" : "Basket empty"}
         </span>
       </button>
+
+      {/* Kidswear detail overlay */}
+      {detail && (
+        <KidswearDetailScreen
+          product={detail}
+          inCart={inCart(detail.id)}
+          onAdd={() => onAdd(detail)}
+          onClose={() => setDetail(null)}
+        />
+      )}
     </div>
   );
 }
