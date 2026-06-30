@@ -4,6 +4,7 @@ import { FruitfulLogo, FruitfulWordmark } from "./FruitfulLogo";
 import { ShoppingBasket, Plus, Check, MapPin } from "lucide-react";
 import type { CartLine } from "@/lib/kiosk-store";
 import { useSamFoxPrints } from "@/lib/samfox-prints";
+import { useKidswear } from "@/lib/kidswear";
 
 type Props = {
   cart: CartLine[];
@@ -17,11 +18,13 @@ type Props = {
 export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClose }: Props) {
   const [active, setActive] = useState<CategoryId>("hats");
   const { products: dbPrints } = useSamFoxPrints();
+  const { products: dbKidswear } = useKidswear();
 
   const items = useMemo(() => {
     if (active === "prints") return dbPrints;
+    if (active === "kidswear") return dbKidswear;
     return PRODUCTS.filter((p) => p.category === active);
-  }, [active, dbPrints]);
+  }, [active, dbPrints, dbKidswear]);
 
   const inCart = (id: string) => cart.find((l) => l.product.id === id)?.qty ?? 0;
 
