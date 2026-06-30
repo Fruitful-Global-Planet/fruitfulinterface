@@ -11,18 +11,26 @@ export type KidswearRow = {
   long_description: string;
   item_code: string | null;
   sku: string | null;
+  barcode: string | null;
   size_label: string;
   age_range: string;
   fabric: string;
   color: string;
+  gender: string;
+  cost_price_excl_vat_cents: number;
+  markup_multiplier: number;
+  vat_rate: number;
   price_zar_cents: number;
   price_usd_cents: number;
   stock: number;
   is_published: boolean;
   brand: string;
+  tags: string[];
 };
 
-export function rowToProduct(row: KidswearRow): Product {
+export type KidswearProduct = Product & { row: KidswearRow };
+
+export function rowToProduct(row: KidswearRow): KidswearProduct {
   return {
     id: `ks-${row.id}`,
     sku: row.sku ?? `BASHEDI-KIDS-${String(row.slot_number).padStart(3, "0")}`,
@@ -37,11 +45,12 @@ export function rowToProduct(row: KidswearRow): Product {
     artisanName: row.brand || "Bashedi Kidswear",
     artisanLocation: "South Africa",
     stock: row.stock,
+    row,
   };
 }
 
 export function useKidswear() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<KidswearProduct[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
