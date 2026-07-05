@@ -362,6 +362,17 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
           onClose={() => setDetail(null)}
         />
       )}
+
+      {scannerOpen && (
+        <BarcodeLookup
+          onClose={() => setScannerOpen(false)}
+          onFound={(p) => {
+            setScannerOpen(false);
+            setActive("kidswear");
+            setDetail(p);
+          }}
+        />
+      )}
     </div>
   );
 }
