@@ -160,15 +160,32 @@ export function KidswearDetailScreen({ product, inCart, onAdd, onClose }: Props)
   );
 }
 
-function Spec({ label, value, icon }: { label: string; value: string | null | undefined; icon?: React.ReactNode }) {
+function Spec({ label, value, icon, copyable }: { label: string; value: string | null | undefined; icon?: React.ReactNode; copyable?: boolean }) {
   return (
     <div>
       <dt className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
         {icon}
         {label}
       </dt>
-      <dd className="mt-0.5 font-display text-sm font-bold" style={{ color: "var(--ink)" }}>
-        {value || "—"}
+      <dd className="mt-0.5 flex items-center gap-1.5 font-display text-sm font-bold" style={{ color: "var(--ink)" }}>
+        <span className="truncate">{value || "—"}</span>
+        {copyable && value && (
+          <button
+            type="button"
+            aria-label={`Copy ${label}`}
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(value);
+                toast.success(`${label} copied`);
+              } catch {
+                toast.error("Copy failed");
+              }
+            }}
+            className="rounded p-0.5 text-muted-foreground hover:text-foreground"
+          >
+            <Copy className="h-3 w-3" />
+          </button>
+        )}
       </dd>
     </div>
   );
