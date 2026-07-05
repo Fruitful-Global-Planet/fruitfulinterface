@@ -156,8 +156,68 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         })}
       </nav>
 
+      {/* Kidswear search + filter */}
+      {isKidswearCat && (
+        <div className="shrink-0 space-y-2 border-b border-border bg-background px-4 py-3">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by item code, name, fabric…"
+              className="w-full rounded-full border border-border bg-secondary/60 pl-9 pr-9 py-2.5 text-sm outline-none focus:border-[var(--coral)]"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 hover:bg-background"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+          {kidswearTags.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+              <button
+                type="button"
+                onClick={() => setTagFilter(null)}
+                className="shrink-0 rounded-full px-3 py-1 text-xs font-bold"
+                style={{
+                  backgroundColor: tagFilter === null ? "var(--ink)" : "var(--secondary, #eee)",
+                  color: tagFilter === null ? "white" : "var(--ink)",
+                }}
+              >
+                All
+              </button>
+              {kidswearTags.map((t) => {
+                const isActive = tagFilter === t;
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTagFilter(isActive ? null : t)}
+                    className="shrink-0 rounded-full px-3 py-1 text-xs font-bold capitalize"
+                    style={{
+                      backgroundColor: isActive ? "var(--coral)" : "var(--secondary, #eee)",
+                      color: isActive ? "white" : "var(--ink)",
+                    }}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Product grid */}
       <main className="flex-1 overflow-y-auto px-4 pt-4 pb-32">
+        {items.length === 0 && (
+          <p className="mt-8 text-center text-sm text-muted-foreground">No products match your filters.</p>
+        )}
         <div className="grid grid-cols-2 gap-3">
           {items.map((p) => {
             const qty = inCart(p.id);
