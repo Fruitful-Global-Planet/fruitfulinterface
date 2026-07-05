@@ -85,13 +85,25 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
           <FruitfulLogo className="h-7 w-7" />
           <FruitfulWordmark className="text-base" />
         </button>
-        <div className="text-right">
-          <p className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-white/90">
-            Node · Silverton
-          </p>
-          <p className="font-display text-xs font-bold text-white">
-            Support Local Artisans
-          </p>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setScannerOpen(true)}
+            className="flex items-center gap-2 rounded-full bg-white/90 px-3 py-2 font-display text-xs font-bold"
+            style={{ color: "var(--ink)" }}
+            aria-label="Scan or enter barcode"
+          >
+            <ScanBarcode className="h-4 w-4" style={{ color: "var(--coral)" }} />
+            Scan
+          </button>
+          <div className="text-right">
+            <p className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-white/90">
+              Node · Silverton
+            </p>
+            <p className="font-display text-xs font-bold text-white">
+              Support Local Artisans
+            </p>
+          </div>
         </div>
       </header>
 
