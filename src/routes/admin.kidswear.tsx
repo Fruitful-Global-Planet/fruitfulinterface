@@ -264,3 +264,54 @@ function NumField({ label, v, on, step }: { label: string; v: number; on: (v: nu
     </label>
   );
 }
+
+const KIDSWEAR_BUCKET = "kidswear-images";
+// 10-year signed URL (bucket is private but images are meant to be publicly viewable in the kiosk)
+const SIGNED_URL_EXPIRY = 60 * 60 * 24 * 365 * 10;
+
+function ImageUploader({ row, onUploaded }: { row: KidswearRow; onUploaded: (url: string) => void }) {
+  const [busy, setBusy] = useState(false);
+  async function handleFile(file: File) {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please choose an image file");
+      return;
+    }
+    setBusy(true);
+    const ext = file.name.split(".").pop() || "png";
+    const path = `slot-${row.slot_number}/${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from(KIDSWEAR_BUCKET)
+      .upload(path, file, { upsert: true, contentType: file.type });
+    if (upErr) {
+      setBusy(false);
+      toast.error(upErr.message);
+      return;
+    }
+    const { data: signed, error: signErr } = await supabase.storage
+      .from(KIDSWEAR_BUCKET)
+      .createSignedUrl(path, SIGNED_URL_EXPIRY);
+    setBusy(false);
+    if (signErr || !signed) {
+      toast.error(signErr?.message ?? "Could not create image URL");
+      return;
+    }
+    onUploaded(signed.signedUrl);
+    toast.success("Image uploaded — remember to Save");
+  }
+  return (
+    <label className="mt-2 flex w-32 cursor-pointer items-center justify-center rounded-lg border border-dashed border-border bg-secondary px-2 py-1.5 text-[10px] font-bold hover:bg-secondary/70">
+      {busy ? "Uploading…" : "Upload image"}
+      <input
+        type="file"
+        accept="image/*"
+        disabled={busy}
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) handleFile(f);
+          e.target.value = "";
+        }}
+      />
+    </label>
+  );
+}
