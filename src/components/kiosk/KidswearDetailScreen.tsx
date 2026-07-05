@@ -1,4 +1,5 @@
-import { X, Plus, Check, MapPin, Tag, ScanBarcode, BadgeCheck } from "lucide-react";
+import { X, Plus, Check, MapPin, Tag, ScanBarcode, BadgeCheck, Copy } from "lucide-react";
+import { toast } from "sonner";
 import type { KidswearProduct } from "@/lib/kidswear";
 import { computeKidswearPrice, formatRand } from "@/lib/kidswear-pricing";
 import { BANNERS } from "@/lib/banners";
@@ -106,15 +107,31 @@ export function KidswearDetailScreen({ product, inCart, onAdd, onClose }: Props)
         {/* Specs */}
         <section className="mt-5 rounded-2xl border border-border bg-card p-4">
           <dl className="grid grid-cols-2 gap-3 text-sm">
-            <Spec label="Item code" value={r.item_code} icon={<Tag className="h-4 w-4" />} />
-            <Spec label="Barcode" value={r.barcode} icon={<ScanBarcode className="h-4 w-4" />} />
-            <Spec label="SKU" value={r.sku} />
+            <Spec label="Item code" value={r.item_code} icon={<Tag className="h-4 w-4" />} copyable />
+            <Spec label="Barcode" value={r.barcode} icon={<ScanBarcode className="h-4 w-4" />} copyable />
+            <Spec label="SKU" value={r.sku} copyable />
             <Spec label="Size" value={r.size_label || "—"} />
             <Spec label="Age range" value={r.age_range || "—"} />
             <Spec label="Fabric" value={r.fabric || "—"} />
             <Spec label="Color" value={r.color || "—"} />
             <Spec label="In stock" value={`${product.stock}`} />
           </dl>
+          <button
+            type="button"
+            onClick={async () => {
+              const text = `Item: ${r.item_code ?? "-"}\nBarcode: ${r.barcode ?? "-"}\nSKU: ${r.sku ?? "-"}`;
+              try {
+                await navigator.clipboard.writeText(text);
+                toast.success("Copied item code & barcode");
+              } catch {
+                toast.error("Copy failed");
+              }
+            }}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-secondary px-3 py-2 font-display text-xs font-bold"
+          >
+            <Copy className="h-3.5 w-3.5" />
+            Copy item code & barcode
+          </button>
         </section>
 
         <div className="mt-4 flex items-center gap-2 rounded-2xl bg-secondary px-4 py-3 text-xs">
@@ -143,15 +160,32 @@ export function KidswearDetailScreen({ product, inCart, onAdd, onClose }: Props)
   );
 }
 
-function Spec({ label, value, icon }: { label: string; value: string | null | undefined; icon?: React.ReactNode }) {
+function Spec({ label, value, icon, copyable }: { label: string; value: string | null | undefined; icon?: React.ReactNode; copyable?: boolean }) {
   return (
     <div>
       <dt className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
         {icon}
         {label}
       </dt>
-      <dd className="mt-0.5 font-display text-sm font-bold" style={{ color: "var(--ink)" }}>
-        {value || "—"}
+      <dd className="mt-0.5 flex items-center gap-1.5 font-display text-sm font-bold" style={{ color: "var(--ink)" }}>
+        <span className="truncate">{value || "—"}</span>
+        {copyable && value && (
+          <button
+            type="button"
+            aria-label={`Copy ${label}`}
+            onClick={async () => {
+              try {
+                await navigator.clipboard.writeText(value);
+                toast.success(`${label} copied`);
+              } catch {
+                toast.error("Copy failed");
+              }
+            }}
+            className="rounded p-0.5 text-muted-foreground hover:text-foreground"
+          >
+            <Copy className="h-3 w-3" />
+          </button>
+        )}
       </dd>
     </div>
   );

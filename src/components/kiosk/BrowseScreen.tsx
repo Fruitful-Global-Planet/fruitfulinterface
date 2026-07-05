@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
 import { CATEGORIES, PRODUCTS, formatZAR, formatUSD, type CategoryId, type Product } from "@/lib/catalog";
 import { FruitfulLogo, FruitfulWordmark } from "./FruitfulLogo";
-import { ShoppingBasket, Plus, Check, MapPin, Info } from "lucide-react";
+import { ShoppingBasket, Plus, Check, MapPin, Info, Search, ScanBarcode, X } from "lucide-react";
 import type { CartLine } from "@/lib/kiosk-store";
 import { useSamFoxPrints } from "@/lib/samfox-prints";
 import { useKidswear, type KidswearProduct } from "@/lib/kidswear";
 import { KidswearDetailScreen } from "./KidswearDetailScreen";
+import { BarcodeLookup } from "./BarcodeLookup";
 import { ROTATING_BANNERS } from "@/lib/banners";
 
 type Props = {
@@ -20,14 +21,51 @@ type Props = {
 export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClose }: Props) {
   const [active, setActive] = useState<CategoryId>("kidswear");
   const [detail, setDetail] = useState<KidswearProduct | null>(null);
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [tagFilter, setTagFilter] = useState<string | null>(null);
   const { products: dbPrints } = useSamFoxPrints();
   const { products: dbKidswear } = useKidswear();
 
-  const items = useMemo<Product[]>(() => {
+  const baseItems = useMemo<Product[]>(() => {
     if (active === "prints") return dbPrints;
     if (active === "kidswear") return dbKidswear;
     return PRODUCTS.filter((p) => p.category === active);
   }, [active, dbPrints, dbKidswear]);
+
+  const isKidswearCat = active === "kidswear";
+
+  const kidswearTags = useMemo(() => {
+    if (!isKidswearCat) return [] as string[];
+    const set = new Set<string>();
+    for (const p of dbKidswear) {
+      const r = p.row;
+      [r.age_range, r.size_label, r.fabric, r.gender, r.color]
+        .filter(Boolean)
+        .forEach((t) => set.add(t as string));
+      (r.tags ?? []).forEach((t) => t && set.add(t));
+    }
+    return Array.from(set).slice(0, 20);
+  }, [dbKidswear, isKidswearCat]);
+
+  const items = useMemo<Product[]>(() => {
+    if (!isKidswearCat) return baseItems;
+    const q = query.trim().toLowerCase();
+    return (baseItems as KidswearProduct[]).filter((p) => {
+      const r = p.row;
+      if (tagFilter) {
+        const haystack = [r.age_range, r.size_label, r.fabric, r.gender, r.color, ...(r.tags ?? [])]
+          .filter(Boolean)
+          .map((s) => (s as string).toLowerCase());
+        if (!haystack.includes(tagFilter.toLowerCase())) return false;
+      }
+      if (!q) return true;
+      const fields = [p.name, r.item_code, r.sku, r.barcode, r.description, r.fabric, r.age_range, r.size_label, r.color]
+        .filter(Boolean)
+        .map((s) => (s as string).toLowerCase());
+      return fields.some((f) => f.includes(q));
+    });
+  }, [baseItems, isKidswearCat, query, tagFilter]);
 
   const inCart = (id: string) => cart.find((l) => l.product.id === id)?.qty ?? 0;
 
@@ -47,13 +85,25 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
           <FruitfulLogo className="h-7 w-7" />
           <FruitfulWordmark className="text-base" />
         </button>
-        <div className="text-right">
-          <p className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-white/90">
-            Node · Silverton
-          </p>
-          <p className="font-display text-xs font-bold text-white">
-            Support Local Artisans
-          </p>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setScannerOpen(true)}
+            className="flex items-center gap-2 rounded-full bg-white/90 px-3 py-2 font-display text-xs font-bold"
+            style={{ color: "var(--ink)" }}
+            aria-label="Scan or enter barcode"
+          >
+            <ScanBarcode className="h-4 w-4" style={{ color: "var(--coral)" }} />
+            Scan
+          </button>
+          <div className="text-right">
+            <p className="font-display text-[10px] font-bold uppercase tracking-[0.2em] text-white/90">
+              Node · Silverton
+            </p>
+            <p className="font-display text-xs font-bold text-white">
+              Support Local Artisans
+            </p>
+          </div>
         </div>
       </header>
 
@@ -106,8 +156,68 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         })}
       </nav>
 
+      {/* Kidswear search + filter */}
+      {isKidswearCat && (
+        <div className="shrink-0 space-y-2 border-b border-border bg-background px-4 py-3">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by item code, name, fabric…"
+              className="w-full rounded-full border border-border bg-secondary/60 pl-9 pr-9 py-2.5 text-sm outline-none focus:border-[var(--coral)]"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => setQuery("")}
+                aria-label="Clear search"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 hover:bg-background"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+          {kidswearTags.length > 0 && (
+            <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+              <button
+                type="button"
+                onClick={() => setTagFilter(null)}
+                className="shrink-0 rounded-full px-3 py-1 text-xs font-bold"
+                style={{
+                  backgroundColor: tagFilter === null ? "var(--ink)" : "var(--secondary, #eee)",
+                  color: tagFilter === null ? "white" : "var(--ink)",
+                }}
+              >
+                All
+              </button>
+              {kidswearTags.map((t) => {
+                const isActive = tagFilter === t;
+                return (
+                  <button
+                    key={t}
+                    type="button"
+                    onClick={() => setTagFilter(isActive ? null : t)}
+                    className="shrink-0 rounded-full px-3 py-1 text-xs font-bold capitalize"
+                    style={{
+                      backgroundColor: isActive ? "var(--coral)" : "var(--secondary, #eee)",
+                      color: isActive ? "white" : "var(--ink)",
+                    }}
+                  >
+                    {t}
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Product grid */}
       <main className="flex-1 overflow-y-auto px-4 pt-4 pb-32">
+        {items.length === 0 && (
+          <p className="mt-8 text-center text-sm text-muted-foreground">No products match your filters.</p>
+        )}
         <div className="grid grid-cols-2 gap-3">
           {items.map((p) => {
             const qty = inCart(p.id);
@@ -250,6 +360,17 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
           inCart={inCart(detail.id)}
           onAdd={() => onAdd(detail)}
           onClose={() => setDetail(null)}
+        />
+      )}
+
+      {scannerOpen && (
+        <BarcodeLookup
+          onClose={() => setScannerOpen(false)}
+          onFound={(p) => {
+            setScannerOpen(false);
+            setActive("kidswear");
+            setDetail(p);
+          }}
         />
       )}
     </div>

@@ -154,6 +154,10 @@ function Editor() {
                 <div className="flex gap-4 p-4">
                   <div className="shrink-0">
                     <img src={row.image_url} alt={row.name} className="h-32 w-32 rounded-lg object-cover" />
+                    <ImageUploader
+                      row={row}
+                      onUploaded={(url) => patch(row.id, { image_url: url })}
+                    />
                     <input
                       value={row.image_url}
                       onChange={(e) => patch(row.id, { image_url: e.target.value })}
@@ -257,6 +261,57 @@ function NumField({ label, v, on, step }: { label: string; v: number; on: (v: nu
     <label className="flex flex-col gap-1">
       <span className="text-xs text-muted-foreground">{label}</span>
       <input type="number" step={step} value={v} onChange={(e) => on(+e.target.value)} className="rounded border border-border bg-background px-2 py-1" />
+    </label>
+  );
+}
+
+const KIDSWEAR_BUCKET = "kidswear-images";
+// 10-year signed URL (bucket is private but images are meant to be publicly viewable in the kiosk)
+const SIGNED_URL_EXPIRY = 60 * 60 * 24 * 365 * 10;
+
+function ImageUploader({ row, onUploaded }: { row: KidswearRow; onUploaded: (url: string) => void }) {
+  const [busy, setBusy] = useState(false);
+  async function handleFile(file: File) {
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please choose an image file");
+      return;
+    }
+    setBusy(true);
+    const ext = file.name.split(".").pop() || "png";
+    const path = `slot-${row.slot_number}/${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage
+      .from(KIDSWEAR_BUCKET)
+      .upload(path, file, { upsert: true, contentType: file.type });
+    if (upErr) {
+      setBusy(false);
+      toast.error(upErr.message);
+      return;
+    }
+    const { data: signed, error: signErr } = await supabase.storage
+      .from(KIDSWEAR_BUCKET)
+      .createSignedUrl(path, SIGNED_URL_EXPIRY);
+    setBusy(false);
+    if (signErr || !signed) {
+      toast.error(signErr?.message ?? "Could not create image URL");
+      return;
+    }
+    onUploaded(signed.signedUrl);
+    toast.success("Image uploaded — remember to Save");
+  }
+  return (
+    <label className="mt-2 flex w-32 cursor-pointer items-center justify-center rounded-lg border border-dashed border-border bg-secondary px-2 py-1.5 text-[10px] font-bold hover:bg-secondary/70">
+      {busy ? "Uploading…" : "Upload image"}
+      <input
+        type="file"
+        accept="image/*"
+        disabled={busy}
+        className="hidden"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) handleFile(f);
+          e.target.value = "";
+        }}
+      />
     </label>
   );
 }
