@@ -1,4 +1,5 @@
-import { X, Plus, Check, MapPin, Tag, ScanBarcode, BadgeCheck } from "lucide-react";
+import { X, Plus, Check, MapPin, Tag, ScanBarcode, BadgeCheck, Copy } from "lucide-react";
+import { toast } from "sonner";
 import type { KidswearProduct } from "@/lib/kidswear";
 import { computeKidswearPrice, formatRand } from "@/lib/kidswear-pricing";
 import { BANNERS } from "@/lib/banners";
