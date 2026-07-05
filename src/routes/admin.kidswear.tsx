@@ -154,6 +154,10 @@ function Editor() {
                 <div className="flex gap-4 p-4">
                   <div className="shrink-0">
                     <img src={row.image_url} alt={row.name} className="h-32 w-32 rounded-lg object-cover" />
+                    <ImageUploader
+                      row={row}
+                      onUploaded={(url) => patch(row.id, { image_url: url })}
+                    />
                     <input
                       value={row.image_url}
                       onChange={(e) => patch(row.id, { image_url: e.target.value })}
