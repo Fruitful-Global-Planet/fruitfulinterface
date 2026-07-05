@@ -1,11 +1,12 @@
 import { useState, useMemo } from "react";
 import { CATEGORIES, PRODUCTS, formatZAR, formatUSD, type CategoryId, type Product } from "@/lib/catalog";
 import { FruitfulLogo, FruitfulWordmark } from "./FruitfulLogo";
-import { ShoppingBasket, Plus, Check, MapPin, Info } from "lucide-react";
+import { ShoppingBasket, Plus, Check, MapPin, Info, Search, ScanBarcode, X } from "lucide-react";
 import type { CartLine } from "@/lib/kiosk-store";
 import { useSamFoxPrints } from "@/lib/samfox-prints";
 import { useKidswear, type KidswearProduct } from "@/lib/kidswear";
 import { KidswearDetailScreen } from "./KidswearDetailScreen";
+import { BarcodeLookup } from "./BarcodeLookup";
 import { ROTATING_BANNERS } from "@/lib/banners";
 
 type Props = {
