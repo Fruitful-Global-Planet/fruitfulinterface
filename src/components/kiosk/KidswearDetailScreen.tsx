@@ -107,15 +107,31 @@ export function KidswearDetailScreen({ product, inCart, onAdd, onClose }: Props)
         {/* Specs */}
         <section className="mt-5 rounded-2xl border border-border bg-card p-4">
           <dl className="grid grid-cols-2 gap-3 text-sm">
-            <Spec label="Item code" value={r.item_code} icon={<Tag className="h-4 w-4" />} />
-            <Spec label="Barcode" value={r.barcode} icon={<ScanBarcode className="h-4 w-4" />} />
-            <Spec label="SKU" value={r.sku} />
+            <Spec label="Item code" value={r.item_code} icon={<Tag className="h-4 w-4" />} copyable />
+            <Spec label="Barcode" value={r.barcode} icon={<ScanBarcode className="h-4 w-4" />} copyable />
+            <Spec label="SKU" value={r.sku} copyable />
             <Spec label="Size" value={r.size_label || "—"} />
             <Spec label="Age range" value={r.age_range || "—"} />
             <Spec label="Fabric" value={r.fabric || "—"} />
             <Spec label="Color" value={r.color || "—"} />
             <Spec label="In stock" value={`${product.stock}`} />
           </dl>
+          <button
+            type="button"
+            onClick={async () => {
+              const text = `Item: ${r.item_code ?? "-"}\nBarcode: ${r.barcode ?? "-"}\nSKU: ${r.sku ?? "-"}`;
+              try {
+                await navigator.clipboard.writeText(text);
+                toast.success("Copied item code & barcode");
+              } catch {
+                toast.error("Copy failed");
+              }
+            }}
+            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-secondary px-3 py-2 font-display text-xs font-bold"
+          >
+            <Copy className="h-3.5 w-3.5" />
+            Copy item code & barcode
+          </button>
         </section>
 
         <div className="mt-4 flex items-center gap-2 rounded-2xl bg-secondary px-4 py-3 text-xs">
