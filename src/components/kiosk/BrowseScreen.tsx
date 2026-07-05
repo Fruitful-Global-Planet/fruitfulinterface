@@ -21,14 +21,51 @@ type Props = {
 export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClose }: Props) {
   const [active, setActive] = useState<CategoryId>("kidswear");
   const [detail, setDetail] = useState<KidswearProduct | null>(null);
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [tagFilter, setTagFilter] = useState<string | null>(null);
   const { products: dbPrints } = useSamFoxPrints();
   const { products: dbKidswear } = useKidswear();
 
-  const items = useMemo<Product[]>(() => {
+  const baseItems = useMemo<Product[]>(() => {
     if (active === "prints") return dbPrints;
     if (active === "kidswear") return dbKidswear;
     return PRODUCTS.filter((p) => p.category === active);
   }, [active, dbPrints, dbKidswear]);
+
+  const isKidswearCat = active === "kidswear";
+
+  const kidswearTags = useMemo(() => {
+    if (!isKidswearCat) return [] as string[];
+    const set = new Set<string>();
+    for (const p of dbKidswear) {
+      const r = p.row;
+      [r.age_range, r.size_label, r.fabric, r.gender, r.color]
+        .filter(Boolean)
+        .forEach((t) => set.add(t as string));
+      (r.tags ?? []).forEach((t) => t && set.add(t));
+    }
+    return Array.from(set).slice(0, 20);
+  }, [dbKidswear, isKidswearCat]);
+
+  const items = useMemo<Product[]>(() => {
+    if (!isKidswearCat) return baseItems;
+    const q = query.trim().toLowerCase();
+    return (baseItems as KidswearProduct[]).filter((p) => {
+      const r = p.row;
+      if (tagFilter) {
+        const haystack = [r.age_range, r.size_label, r.fabric, r.gender, r.color, ...(r.tags ?? [])]
+          .filter(Boolean)
+          .map((s) => (s as string).toLowerCase());
+        if (!haystack.includes(tagFilter.toLowerCase())) return false;
+      }
+      if (!q) return true;
+      const fields = [p.name, r.item_code, r.sku, r.barcode, r.description, r.fabric, r.age_range, r.size_label, r.color]
+        .filter(Boolean)
+        .map((s) => (s as string).toLowerCase());
+      return fields.some((f) => f.includes(q));
+    });
+  }, [baseItems, isKidswearCat, query, tagFilter]);
 
   const inCart = (id: string) => cart.find((l) => l.product.id === id)?.qty ?? 0;
 
