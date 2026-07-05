@@ -77,14 +77,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Fruitful Portal · Kiosk" },
+      { name: "description", content: "Fruitful Portal — the on-device touchscreen that powers Fruitful's artisan kiosks across South Africa." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Fruitful Portal · Kiosk" },
+      { property: "og:description", content: "Fruitful Portal — the on-device touchscreen that powers Fruitful's artisan kiosks across South Africa." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Fruitful Portal · Kiosk" },
+      { name: "twitter:description", content: "Fruitful Portal — the on-device touchscreen that powers Fruitful's artisan kiosks across South Africa." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/zqE8IzeCasansaqCO5SyohAMIah1/social-images/social-1783258801305-samfox-rainbow-tata-D-dLbgP7.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/zqE8IzeCasansaqCO5SyohAMIah1/social-images/social-1783258801305-samfox-rainbow-tata-D-dLbgP7.webp" },
     ],
     links: [
       {
