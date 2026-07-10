@@ -1,4 +1,5 @@
 import { FruitfulLogo, FruitfulWordmark } from "./FruitfulLogo";
+import madibaAsset from "@/assets/brand/madiba-tata.jpg.asset.json";
 
 export function AttractorScreen({ onBegin }: { onBegin: () => void }) {
   return (
@@ -14,6 +15,18 @@ export function AttractorScreen({ onBegin }: { onBegin: () => void }) {
         style={{
           background:
             "radial-gradient(120% 60% at 50% 0%, color-mix(in oklab, white 35%, transparent), transparent 60%)",
+        }}
+      />
+      {/* Secondary portrait — Madiba Tata backdrop */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-0 h-1/2 opacity-25"
+        style={{
+          backgroundImage: `url(${madibaAsset.url})`,
+          backgroundSize: "contain",
+          backgroundPosition: "center bottom",
+          backgroundRepeat: "no-repeat",
+          maskImage: "linear-gradient(transparent, black 40%)",
+          WebkitMaskImage: "linear-gradient(transparent, black 40%)",
         }}
       />
       {/* Subtle scanning shine */}
@@ -39,17 +52,9 @@ export function AttractorScreen({ onBegin }: { onBegin: () => void }) {
 
       {/* Mascot + headline */}
       <div className="z-10 flex flex-col items-center px-6">
-        <div
-          className="animate-fruitful-bob rounded-full p-4"
-          style={{
-            backgroundColor: "white",
-            boxShadow: "0 30px 60px -20px rgba(0,0,0,0.25)",
-          }}
-        >
-          <FruitfulLogo className="h-44 w-44 object-contain" />
-        </div>
+        <FruitfulLogo className="h-52 w-52 animate-fruitful-bob drop-shadow-[0_20px_40px_rgba(0,0,0,0.25)]" />
         <h1
-          className="mt-8 text-center font-display text-5xl font-bold leading-[1.05]"
+          className="mt-6 text-center font-display text-5xl font-bold leading-[1.05]"
           style={{ color: "white" }}
         >
           The portal that

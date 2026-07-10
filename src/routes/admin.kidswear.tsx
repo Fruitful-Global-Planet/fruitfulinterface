@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Toaster } from "@/components/ui/sonner";
 import { computeKidswearPrice, formatRand } from "@/lib/kidswear-pricing";
 import type { KidswearRow } from "@/lib/kidswear";
+import { CsvImport } from "@/components/admin/CsvImport";
 
 export const Route = createFileRoute("/admin/kidswear")({
   head: () => ({ meta: [{ title: "Fruitful · Kidswear Admin" }] }),
@@ -138,6 +139,10 @@ function Editor() {
           Selling price auto-calculates: <b>cost excl VAT × markup × (1 + VAT)</b>.
         </p>
       </header>
+
+      <CsvImport onImported={load} />
+
+
 
       {loading ? (
         <p className="mt-8">Loading…</p>

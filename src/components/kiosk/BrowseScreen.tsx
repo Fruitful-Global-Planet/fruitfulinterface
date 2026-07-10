@@ -1,13 +1,23 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { CATEGORIES, PRODUCTS, formatZAR, formatUSD, type CategoryId, type Product } from "@/lib/catalog";
 import { FruitfulLogo, FruitfulWordmark } from "./FruitfulLogo";
-import { ShoppingBasket, Plus, Check, MapPin, Info, Search, ScanBarcode, X } from "lucide-react";
+import { ShoppingBasket, Plus, Check, MapPin, Info, Search, ScanBarcode, X, ArrowUpDown, ChevronLeft, ChevronRight, SearchX } from "lucide-react";
 import type { CartLine } from "@/lib/kiosk-store";
 import { useSamFoxPrints } from "@/lib/samfox-prints";
 import { useKidswear, type KidswearProduct } from "@/lib/kidswear";
 import { KidswearDetailScreen } from "./KidswearDetailScreen";
 import { BarcodeLookup } from "./BarcodeLookup";
 import { ROTATING_BANNERS } from "@/lib/banners";
+
+type SortId = "featured" | "price-asc" | "price-desc" | "name" | "newest";
+const SORT_OPTIONS: { id: SortId; label: string }[] = [
+  { id: "featured", label: "Featured" },
+  { id: "newest", label: "Newest" },
+  { id: "price-asc", label: "Price ↑" },
+  { id: "price-desc", label: "Price ↓" },
+  { id: "name", label: "Name A–Z" },
+];
+const PAGE_SIZE = 8;
 
 type Props = {
   cart: CartLine[];
@@ -24,6 +34,8 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
   const [scannerOpen, setScannerOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [tagFilter, setTagFilter] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<SortId>("featured");
+  const [page, setPage] = useState(1);
   const { products: dbPrints } = useSamFoxPrints();
   const { products: dbKidswear } = useKidswear();
 
@@ -48,7 +60,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
     return Array.from(set).slice(0, 20);
   }, [dbKidswear, isKidswearCat]);
 
-  const items = useMemo<Product[]>(() => {
+  const filtered = useMemo<Product[]>(() => {
     if (!isKidswearCat) return baseItems;
     const q = query.trim().toLowerCase();
     return (baseItems as KidswearProduct[]).filter((p) => {
@@ -66,6 +78,36 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
       return fields.some((f) => f.includes(q));
     });
   }, [baseItems, isKidswearCat, query, tagFilter]);
+
+  const sorted = useMemo<Product[]>(() => {
+    const arr = [...filtered];
+    switch (sortBy) {
+      case "price-asc": arr.sort((a, b) => a.priceZAR - b.priceZAR); break;
+      case "price-desc": arr.sort((a, b) => b.priceZAR - a.priceZAR); break;
+      case "name": arr.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case "newest":
+        if (isKidswearCat) {
+          arr.sort((a, b) => (b as KidswearProduct).row.slot_number - (a as KidswearProduct).row.slot_number);
+        }
+        break;
+      case "featured":
+      default:
+        arr.sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
+        break;
+    }
+    return arr;
+  }, [filtered, sortBy, isKidswearCat]);
+
+  const pageCount = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount);
+  const items = useMemo(
+    () => sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
+    [sorted, safePage],
+  );
+
+  useEffect(() => { setPage(1); }, [active, query, tagFilter, sortBy]);
+
+  const activeFilters = isKidswearCat && (query.trim() || tagFilter);
 
   const inCart = (id: string) => cart.find((l) => l.product.id === id)?.qty ?? 0;
 
@@ -210,14 +252,51 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
               })}
             </div>
           )}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <ArrowUpDown className="h-3.5 w-3.5" />
+              <span className="font-display font-bold uppercase tracking-widest">Sort</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortId)}
+                className="rounded-md border border-border bg-background px-2 py-1 font-display text-xs font-bold"
+                style={{ color: "var(--ink)" }}
+              >
+                {SORT_OPTIONS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+              </select>
+            </div>
+            <span className="font-display text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              {sorted.length} {sorted.length === 1 ? "item" : "items"}
+            </span>
+          </div>
         </div>
       )}
 
       {/* Product grid */}
       <main className="flex-1 overflow-y-auto px-4 pt-4 pb-32">
-        {items.length === 0 && (
-          <p className="mt-8 text-center text-sm text-muted-foreground">No products match your filters.</p>
-        )}
+        {items.length === 0 ? (
+          <div className="mt-10 flex flex-col items-center gap-3 rounded-3xl border border-dashed border-border bg-card px-6 py-10 text-center">
+            <SearchX className="h-10 w-10" style={{ color: "var(--coral)" }} />
+            <h3 className="font-display text-lg font-bold" style={{ color: "var(--ink)" }}>
+              No Kidswear match {query.trim() ? `"${query.trim()}"` : "these filters"}
+            </h3>
+            <p className="max-w-xs text-sm text-muted-foreground">
+              {tagFilter
+                ? `Try removing the "${tagFilter}" tag or clearing your search.`
+                : "Try a different item code, size, or fabric — or clear the search to see everything."}
+            </p>
+            {activeFilters && (
+              <button
+                type="button"
+                onClick={() => { setQuery(""); setTagFilter(null); }}
+                className="rounded-full px-4 py-2 font-display text-xs font-bold text-white"
+                style={{ backgroundColor: "var(--coral)" }}
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
+        ) : null}
         <div className="grid grid-cols-2 gap-3">
           {items.map((p) => {
             const qty = inCart(p.id);
@@ -313,11 +392,40 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
           })}
         </div>
 
+        {isKidswearCat && pageCount > 1 && (
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              disabled={safePage === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-card font-display disabled:opacity-30"
+              style={{ border: "1px solid var(--border)", color: "var(--ink)" }}
+              aria-label="Previous page"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <span className="font-display text-sm font-bold" style={{ color: "var(--ink)" }}>
+              Page {safePage} / {pageCount}
+            </span>
+            <button
+              type="button"
+              disabled={safePage === pageCount}
+              onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+              className="flex h-10 w-10 items-center justify-center rounded-full font-display text-white disabled:opacity-30"
+              style={{ backgroundColor: "var(--coral)" }}
+              aria-label="Next page"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+        )}
+
         {/* Brand footer */}
         <div className="mt-8 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           Crafted in South Africa · Made in the bush
         </div>
       </main>
+
 
       {/* Persistent basket bar */}
       <button
