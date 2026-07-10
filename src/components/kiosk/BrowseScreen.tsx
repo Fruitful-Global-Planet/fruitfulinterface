@@ -1,13 +1,23 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { CATEGORIES, PRODUCTS, formatZAR, formatUSD, type CategoryId, type Product } from "@/lib/catalog";
 import { FruitfulLogo, FruitfulWordmark } from "./FruitfulLogo";
-import { ShoppingBasket, Plus, Check, MapPin, Info, Search, ScanBarcode, X } from "lucide-react";
+import { ShoppingBasket, Plus, Check, MapPin, Info, Search, ScanBarcode, X, ArrowUpDown, ChevronLeft, ChevronRight, SearchX } from "lucide-react";
 import type { CartLine } from "@/lib/kiosk-store";
 import { useSamFoxPrints } from "@/lib/samfox-prints";
 import { useKidswear, type KidswearProduct } from "@/lib/kidswear";
 import { KidswearDetailScreen } from "./KidswearDetailScreen";
 import { BarcodeLookup } from "./BarcodeLookup";
 import { ROTATING_BANNERS } from "@/lib/banners";
+
+type SortId = "featured" | "price-asc" | "price-desc" | "name" | "newest";
+const SORT_OPTIONS: { id: SortId; label: string }[] = [
+  { id: "featured", label: "Featured" },
+  { id: "newest", label: "Newest" },
+  { id: "price-asc", label: "Price ↑" },
+  { id: "price-desc", label: "Price ↓" },
+  { id: "name", label: "Name A–Z" },
+];
+const PAGE_SIZE = 8;
 
 type Props = {
   cart: CartLine[];
