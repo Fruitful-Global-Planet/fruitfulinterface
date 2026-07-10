@@ -34,6 +34,8 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
   const [scannerOpen, setScannerOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [tagFilter, setTagFilter] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<SortId>("featured");
+  const [page, setPage] = useState(1);
   const { products: dbPrints } = useSamFoxPrints();
   const { products: dbKidswear } = useKidswear();
 
