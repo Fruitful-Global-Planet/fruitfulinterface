@@ -1,12 +1,13 @@
-import logoAsset from "@/assets/mr-fruitful-logo.jpeg.asset.json";
+import markAsset from "@/assets/brand/fruitful-mark.png.asset.json";
 
 export function FruitfulLogo({ className }: { className?: string }) {
   return (
     <img
-      src={logoAsset.url}
-      alt="Mr Fruitful"
+      src={markAsset.url}
+      alt="Fruitful"
       className={className}
       draggable={false}
+      style={{ objectFit: "contain" }}
     />
   );
 }
