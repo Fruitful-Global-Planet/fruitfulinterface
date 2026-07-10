@@ -392,11 +392,40 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
           })}
         </div>
 
+        {isKidswearCat && pageCount > 1 && (
+          <div className="mt-6 flex items-center justify-center gap-3">
+            <button
+              type="button"
+              disabled={safePage === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-card font-display disabled:opacity-30"
+              style={{ border: "1px solid var(--border)", color: "var(--ink)" }}
+              aria-label="Previous page"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+            <span className="font-display text-sm font-bold" style={{ color: "var(--ink)" }}>
+              Page {safePage} / {pageCount}
+            </span>
+            <button
+              type="button"
+              disabled={safePage === pageCount}
+              onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+              className="flex h-10 w-10 items-center justify-center rounded-full font-display text-white disabled:opacity-30"
+              style={{ backgroundColor: "var(--coral)" }}
+              aria-label="Next page"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
+        )}
+
         {/* Brand footer */}
         <div className="mt-8 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
           Crafted in South Africa · Made in the bush
         </div>
       </main>
+
 
       {/* Persistent basket bar */}
       <button
