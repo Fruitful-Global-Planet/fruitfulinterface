@@ -140,6 +140,10 @@ function Editor() {
         </p>
       </header>
 
+      <CsvImport onImported={load} />
+
+
+
       {loading ? (
         <p className="mt-8">Loading…</p>
       ) : (
