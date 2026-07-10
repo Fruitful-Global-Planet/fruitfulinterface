@@ -252,14 +252,51 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
               })}
             </div>
           )}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+              <ArrowUpDown className="h-3.5 w-3.5" />
+              <span className="font-display font-bold uppercase tracking-widest">Sort</span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as SortId)}
+                className="rounded-md border border-border bg-background px-2 py-1 font-display text-xs font-bold"
+                style={{ color: "var(--ink)" }}
+              >
+                {SORT_OPTIONS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+              </select>
+            </div>
+            <span className="font-display text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              {sorted.length} {sorted.length === 1 ? "item" : "items"}
+            </span>
+          </div>
         </div>
       )}
 
       {/* Product grid */}
       <main className="flex-1 overflow-y-auto px-4 pt-4 pb-32">
-        {items.length === 0 && (
-          <p className="mt-8 text-center text-sm text-muted-foreground">No products match your filters.</p>
-        )}
+        {items.length === 0 ? (
+          <div className="mt-10 flex flex-col items-center gap-3 rounded-3xl border border-dashed border-border bg-card px-6 py-10 text-center">
+            <SearchX className="h-10 w-10" style={{ color: "var(--coral)" }} />
+            <h3 className="font-display text-lg font-bold" style={{ color: "var(--ink)" }}>
+              No Kidswear match {query.trim() ? `"${query.trim()}"` : "these filters"}
+            </h3>
+            <p className="max-w-xs text-sm text-muted-foreground">
+              {tagFilter
+                ? `Try removing the "${tagFilter}" tag or clearing your search.`
+                : "Try a different item code, size, or fabric — or clear the search to see everything."}
+            </p>
+            {activeFilters && (
+              <button
+                type="button"
+                onClick={() => { setQuery(""); setTagFilter(null); }}
+                className="rounded-full px-4 py-2 font-display text-xs font-bold text-white"
+                style={{ backgroundColor: "var(--coral)" }}
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
+        ) : null}
         <div className="grid grid-cols-2 gap-3">
           {items.map((p) => {
             const qty = inCart(p.id);
