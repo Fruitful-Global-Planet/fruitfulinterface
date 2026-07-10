@@ -60,7 +60,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
     return Array.from(set).slice(0, 20);
   }, [dbKidswear, isKidswearCat]);
 
-  const items = useMemo<Product[]>(() => {
+  const filtered = useMemo<Product[]>(() => {
     if (!isKidswearCat) return baseItems;
     const q = query.trim().toLowerCase();
     return (baseItems as KidswearProduct[]).filter((p) => {
@@ -78,6 +78,36 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
       return fields.some((f) => f.includes(q));
     });
   }, [baseItems, isKidswearCat, query, tagFilter]);
+
+  const sorted = useMemo<Product[]>(() => {
+    const arr = [...filtered];
+    switch (sortBy) {
+      case "price-asc": arr.sort((a, b) => a.priceZAR - b.priceZAR); break;
+      case "price-desc": arr.sort((a, b) => b.priceZAR - a.priceZAR); break;
+      case "name": arr.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case "newest":
+        if (isKidswearCat) {
+          arr.sort((a, b) => (b as KidswearProduct).row.slot_number - (a as KidswearProduct).row.slot_number);
+        }
+        break;
+      case "featured":
+      default:
+        arr.sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
+        break;
+    }
+    return arr;
+  }, [filtered, sortBy, isKidswearCat]);
+
+  const pageCount = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount);
+  const items = useMemo(
+    () => sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
+    [sorted, safePage],
+  );
+
+  useEffect(() => { setPage(1); }, [active, query, tagFilter, sortBy]);
+
+  const activeFilters = isKidswearCat && (query.trim() || tagFilter);
 
   const inCart = (id: string) => cart.find((l) => l.product.id === id)?.qty ?? 0;
 
