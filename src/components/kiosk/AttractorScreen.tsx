@@ -1,5 +1,4 @@
 import { FruitfulLogo, FruitfulWordmark } from "./FruitfulLogo";
-import madibaAsset from "@/assets/brand/madiba-tata.jpg.asset.json";
 
 export function AttractorScreen({ onBegin }: { onBegin: () => void }) {
   return (
