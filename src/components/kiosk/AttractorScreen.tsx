@@ -1,5 +1,4 @@
 import { FruitfulLogo, FruitfulWordmark } from "./FruitfulLogo";
-import madibaAsset from "@/assets/brand/madiba-tata.jpg.asset.json";
 
 export function AttractorScreen({ onBegin }: { onBegin: () => void }) {
   return (
@@ -15,18 +14,6 @@ export function AttractorScreen({ onBegin }: { onBegin: () => void }) {
         style={{
           background:
             "radial-gradient(120% 60% at 50% 0%, color-mix(in oklab, white 35%, transparent), transparent 60%)",
-        }}
-      />
-      {/* Secondary portrait — Madiba Tata backdrop */}
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 -z-0 h-1/2 opacity-25"
-        style={{
-          backgroundImage: `url(${madibaAsset.url})`,
-          backgroundSize: "contain",
-          backgroundPosition: "center bottom",
-          backgroundRepeat: "no-repeat",
-          maskImage: "linear-gradient(transparent, black 40%)",
-          WebkitMaskImage: "linear-gradient(transparent, black 40%)",
         }}
       />
       {/* Subtle scanning shine */}
