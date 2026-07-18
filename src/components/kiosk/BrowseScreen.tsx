@@ -392,7 +392,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
           })}
         </div>
 
-        {isKidswearCat && pageCount > 1 && (
+        {pageCount > 1 && (
           <div className="mt-6 flex items-center justify-center gap-3">
             <button
               type="button"
