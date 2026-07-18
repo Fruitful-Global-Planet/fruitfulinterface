@@ -16,18 +16,6 @@ export function AttractorScreen({ onBegin }: { onBegin: () => void }) {
             "radial-gradient(120% 60% at 50% 0%, color-mix(in oklab, white 35%, transparent), transparent 60%)",
         }}
       />
-      {/* Secondary portrait — Madiba Tata backdrop */}
-      <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 -z-0 h-1/2 opacity-25"
-        style={{
-          backgroundImage: `url(${madibaAsset.url})`,
-          backgroundSize: "contain",
-          backgroundPosition: "center bottom",
-          backgroundRepeat: "no-repeat",
-          maskImage: "linear-gradient(transparent, black 40%)",
-          WebkitMaskImage: "linear-gradient(transparent, black 40%)",
-        }}
-      />
       {/* Subtle scanning shine */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
