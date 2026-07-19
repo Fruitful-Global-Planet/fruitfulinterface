@@ -1,22 +1,36 @@
-import { useState, useMemo, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+import {
+  ArrowUpDown,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Home,
+  Info,
+  Plus,
+  ScanBarcode,
+  Search,
+  SearchX,
+  ShoppingBasket,
+  X,
+} from "lucide-react";
 import { CATEGORIES, PRODUCTS, formatZAR, formatUSD, type CategoryId, type Product } from "@/lib/catalog";
-import { FruitfulLogo, FruitfulWordmark } from "./FruitfulLogo";
-import { ShoppingBasket, Plus, Check, MapPin, Info, Search, ScanBarcode, X, ArrowUpDown, ChevronLeft, ChevronRight, SearchX } from "lucide-react";
 import type { CartLine } from "@/lib/kiosk-store";
-import { useSamFoxPrints } from "@/lib/samfox-prints";
 import { useKidswear, type KidswearProduct } from "@/lib/kidswear";
-import { KidswearDetailScreen } from "./KidswearDetailScreen";
+import { useSamFoxPrints } from "@/lib/samfox-prints";
 import { BarcodeLookup } from "./BarcodeLookup";
-import { ROTATING_BANNERS } from "@/lib/banners";
+import { FruitfulLogo, FruitfulWordmark } from "./FruitfulLogo";
+import { KidswearDetailScreen } from "./KidswearDetailScreen";
 
 type SortId = "featured" | "price-asc" | "price-desc" | "name" | "newest";
+
 const SORT_OPTIONS: { id: SortId; label: string }[] = [
   { id: "featured", label: "Featured" },
   { id: "newest", label: "Newest" },
-  { id: "price-asc", label: "Price ↑" },
-  { id: "price-desc", label: "Price ↓" },
-  { id: "name", label: "Name A–Z" },
+  { id: "price-asc", label: "Price low" },
+  { id: "price-desc", label: "Price high" },
+  { id: "name", label: "Name A-Z" },
 ];
+
 const PAGE_SIZE = 8;
 
 type Props = {
@@ -57,7 +71,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         .forEach((t) => set.add(t as string));
       (r.tags ?? []).forEach((t) => t && set.add(t));
     }
-    return Array.from(set).slice(0, 20);
+    return Array.from(set).slice(0, 18);
   }, [dbKidswear, isKidswearCat]);
 
   const filtered = useMemo<Product[]>(() => {
@@ -82,13 +96,17 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
   const sorted = useMemo<Product[]>(() => {
     const arr = [...filtered];
     switch (sortBy) {
-      case "price-asc": arr.sort((a, b) => a.priceZAR - b.priceZAR); break;
-      case "price-desc": arr.sort((a, b) => b.priceZAR - a.priceZAR); break;
-      case "name": arr.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case "price-asc":
+        arr.sort((a, b) => a.priceZAR - b.priceZAR);
+        break;
+      case "price-desc":
+        arr.sort((a, b) => b.priceZAR - a.priceZAR);
+        break;
+      case "name":
+        arr.sort((a, b) => a.name.localeCompare(b.name));
+        break;
       case "newest":
-        if (isKidswearCat) {
-          arr.sort((a, b) => (b as KidswearProduct).row.slot_number - (a as KidswearProduct).row.slot_number);
-        }
+        if (isKidswearCat) arr.sort((a, b) => (b as KidswearProduct).row.slot_number - (a as KidswearProduct).row.slot_number);
         break;
       case "featured":
       default:
@@ -96,390 +114,303 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         break;
     }
     return arr;
-  }, [filtered, sortBy, isKidswearCat]);
+  }, [filtered, isKidswearCat, sortBy]);
 
   const pageCount = Math.max(1, Math.ceil(sorted.length / PAGE_SIZE));
   const safePage = Math.min(page, pageCount);
-  const items = useMemo(
-    () => sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE),
-    [sorted, safePage],
-  );
-
-  useEffect(() => { setPage(1); }, [active, query, tagFilter, sortBy]);
-
+  const items = sorted.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
   const activeFilters = isKidswearCat && (query.trim() || tagFilter);
-  const inCart = (id: string) => cart.find((l) => l.product.id === id)?.qty ?? 0;
   const activeCat = CATEGORIES.find((c) => c.id === active);
+  const inCart = (id: string) => cart.find((l) => l.product.id === id)?.qty ?? 0;
+
+  useEffect(() => {
+    setPage(1);
+  }, [active, query, tagFilter, sortBy]);
 
   return (
-    <div className="flex h-full w-full flex-col" style={{ backgroundColor: "var(--background)" }}>
-      {/* ═══════ HEADER — bold coral slab ═══════ */}
-      <header
-        className="relative shrink-0 px-5 pb-4 pt-5"
-        style={{ backgroundColor: "var(--coral)" }}
-      >
-        <div className="flex items-center justify-between">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex items-center gap-2 rounded-full bg-white px-3 py-2 shadow-lg active:scale-95"
-            aria-label="Home"
-          >
-            <FruitfulLogo className="h-7 w-7" />
-            <FruitfulWordmark className="text-base" />
+    <div className="relative grid h-full w-full min-w-0 max-w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden" style={{ backgroundColor: "var(--background)", color: "var(--ink)" }}>
+      <header className="w-full min-w-0 max-w-full shrink-0 overflow-hidden border-b border-border bg-background px-4 pb-3 pt-4">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2">
+          <button type="button" onClick={onClose} className="flex min-w-0 items-center gap-2 text-left active:scale-95" aria-label="Home">
+            <FruitfulLogo className="h-9 w-9 shrink-0" />
+            <FruitfulWordmark className="truncate text-xl" />
           </button>
           <button
             type="button"
             onClick={() => setScannerOpen(true)}
-            className="flex items-center gap-2 rounded-full px-4 py-2 font-display text-xs font-black uppercase tracking-widest shadow-lg active:scale-95"
-            style={{ backgroundColor: "var(--sun)", color: "var(--ink)" }}
+            className="grid h-12 w-12 shrink-0 place-items-center rounded-full active:scale-95"
+            style={{ backgroundColor: "var(--cream)", color: "var(--ink)" }}
+            aria-label="Scan barcode"
           >
-            <ScanBarcode className="h-4 w-4" />
-            Scan
+            <ScanBarcode className="h-6 w-6" />
+          </button>
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid h-12 w-12 shrink-0 place-items-center rounded-full active:scale-95"
+            style={{ backgroundColor: "var(--coral)", color: "var(--coral-foreground)" }}
+            aria-label="Return to start"
+          >
+            <Home className="h-5 w-5" />
           </button>
         </div>
+
         <div className="mt-4">
-          <p className="font-display text-[10px] font-black uppercase tracking-[0.35em] text-white/80">
-            Now shopping
+          <p className="font-display text-[10px] font-black uppercase tracking-[0.32em]" style={{ color: "var(--coral)" }}>
+            Choose a department
           </p>
-          <h1 className="font-display text-4xl font-black leading-none text-white" style={{ letterSpacing: "-0.02em" }}>
-            {activeCat?.emoji} {activeCat?.label}
+          <h1 className="mt-1 truncate font-display text-4xl font-black leading-none" style={{ letterSpacing: "0" }}>
+            {activeCat?.label}
           </h1>
         </div>
-      </header>
 
-      {/* ═══════ CATEGORY RAIL — big pills ═══════ */}
-      <nav
-        className="flex shrink-0 gap-2 overflow-x-auto px-4 py-3"
-        style={{ backgroundColor: "var(--coral)", scrollbarWidth: "none" }}
-      >
-        {CATEGORIES.map((c) => {
-          const isActive = c.id === active;
-          return (
-            <button
-              key={c.id}
-              type="button"
-              onClick={() => setActive(c.id)}
-              className="flex shrink-0 items-center gap-2 rounded-2xl px-4 py-3 font-display text-sm font-black uppercase tracking-wider transition-transform active:scale-95"
-              style={{
-                backgroundColor: isActive ? "white" : "color-mix(in oklab, white 15%, transparent)",
-                color: isActive ? "var(--coral)" : "white",
-                boxShadow: isActive ? "0 10px 24px -8px rgba(0,0,0,0.35)" : undefined,
-              }}
-            >
-              <span className="text-lg" aria-hidden>{c.emoji}</span>
-              <span>{c.label}</span>
-            </button>
-          );
-        })}
-      </nav>
-
-      {/* ═══════ Banner strip ═══════ */}
-      <div
-        className="flex shrink-0 gap-3 overflow-x-auto px-4 py-3"
-        style={{ backgroundColor: "var(--mint)", scrollbarWidth: "none" }}
-      >
-        {ROTATING_BANNERS.map((b) => (
-          <div
-            key={b.src}
-            className="relative h-20 w-56 shrink-0 overflow-hidden rounded-2xl shadow-md"
-            style={{ backgroundColor: "var(--cream)" }}
-          >
-            <img src={b.src} alt={b.title} className="h-full w-full object-cover" loading="lazy" draggable={false} />
-            <div
-              className="absolute inset-x-0 bottom-0 px-2 py-1.5 text-[10px] font-black uppercase tracking-widest text-white"
-              style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.75))" }}
-            >
-              {b.title}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* ═══════ Kidswear search + filter ═══════ */}
-      {isKidswearCat && (
-        <div className="shrink-0 space-y-2 border-b border-border bg-background px-4 py-3">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search item code, name, fabric…"
-              className="w-full rounded-full border-2 border-border bg-secondary/60 pl-9 pr-9 py-3 text-sm font-semibold outline-none focus:border-[var(--coral)]"
-            />
-            {query && (
+        <nav className="mt-4 flex w-full min-w-0 max-w-full gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }} aria-label="Product categories">
+          {CATEGORIES.map((c) => {
+            const isActive = c.id === active;
+            return (
               <button
+                key={c.id}
                 type="button"
-                onClick={() => setQuery("")}
-                aria-label="Clear search"
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded-full p-1 hover:bg-background"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            )}
-          </div>
-          {kidswearTags.length > 0 && (
-            <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
-              <button
-                type="button"
-                onClick={() => setTagFilter(null)}
-                className="shrink-0 rounded-full px-3 py-1.5 text-xs font-black uppercase"
+                onClick={() => setActive(c.id)}
+                className="flex h-14 shrink-0 items-center gap-2 rounded-full px-5 font-display text-sm font-black uppercase tracking-wide active:scale-95"
                 style={{
-                  backgroundColor: tagFilter === null ? "var(--ink)" : "var(--secondary, #eee)",
-                  color: tagFilter === null ? "white" : "var(--ink)",
+                  backgroundColor: isActive ? "var(--ink)" : "var(--cream)",
+                  color: isActive ? "var(--background)" : "var(--ink)",
                 }}
               >
-                All
+                {c.label}
               </button>
-              {kidswearTags.map((t) => {
-                const isActive = tagFilter === t;
-                return (
-                  <button
-                    key={t}
-                    type="button"
-                    onClick={() => setTagFilter(isActive ? null : t)}
-                    className="shrink-0 rounded-full px-3 py-1.5 text-xs font-black uppercase"
-                    style={{
-                      backgroundColor: isActive ? "var(--coral)" : "var(--secondary, #eee)",
-                      color: isActive ? "white" : "var(--ink)",
-                    }}
-                  >
-                    {t}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
-              <ArrowUpDown className="h-3.5 w-3.5" />
-              <span className="font-display font-black uppercase tracking-widest">Sort</span>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortId)}
-                className="rounded-md border border-border bg-background px-2 py-1 font-display text-xs font-black"
-                style={{ color: "var(--ink)" }}
-              >
-                {SORT_OPTIONS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-              </select>
-            </div>
-            <span className="font-display text-[11px] font-black uppercase tracking-widest text-muted-foreground">
-              {sorted.length} {sorted.length === 1 ? "item" : "items"}
-            </span>
-          </div>
-        </div>
-      )}
+            );
+          })}
+        </nav>
+      </header>
 
-      {/* ═══════ PRODUCT GRID ═══════ */}
-      <main className="flex-1 overflow-y-auto px-4 pt-4 pb-36">
+      <main className="min-h-0 w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto px-4 pb-6 pt-4" style={{ WebkitOverflowScrolling: "touch" }}>
+        <section
+          className="mb-4 w-full min-w-0 overflow-hidden rounded-[28px]"
+          style={{ backgroundColor: "var(--mint)", boxShadow: "0 18px 40px rgba(0,0,0,0.08)" }}
+        >
+          <div className="grid grid-cols-[minmax(0,1fr)_96px] items-center gap-3 p-4">
+            <div className="min-w-0">
+              <p className="font-display text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "color-mix(in oklab, var(--ink) 65%, transparent)" }}>
+                Fruitful selection
+              </p>
+              <h2 className="mt-1 font-display text-2xl font-black leading-none" style={{ letterSpacing: "0" }}>
+                {sorted.length} pieces ready
+              </h2>
+              <p className="mt-2 line-clamp-2 text-sm font-bold leading-tight" style={{ color: "color-mix(in oklab, var(--ink) 72%, transparent)" }}>
+                Tap a product for detail, add to basket, then check out from the fixed bar below.
+              </p>
+            </div>
+            <div className="grid h-24 w-24 place-items-center rounded-3xl bg-card">
+              <FruitfulLogo className="h-16 w-16" />
+            </div>
+          </div>
+        </section>
+
+        {isKidswearCat && (
+          <section className="mb-4 w-full min-w-0 space-y-3 rounded-[28px] bg-card p-3 shadow-sm">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search code, barcode, fabric..."
+                className="h-14 w-full rounded-full border border-border bg-background py-3 pl-12 pr-12 text-base font-bold outline-none focus:border-primary"
+              />
+              {query && (
+                <button
+                  type="button"
+                  onClick={() => setQuery("")}
+                  aria-label="Clear search"
+                  className="absolute right-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full active:scale-95"
+                  style={{ backgroundColor: "var(--cream)" }}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            {kidswearTags.length > 0 && (
+              <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+                <button
+                  type="button"
+                  onClick={() => setTagFilter(null)}
+                  className="h-10 shrink-0 rounded-full px-4 font-display text-xs font-black uppercase tracking-wider active:scale-95"
+                  style={{ backgroundColor: tagFilter === null ? "var(--coral)" : "var(--cream)", color: tagFilter === null ? "var(--coral-foreground)" : "var(--ink)" }}
+                >
+                  All
+                </button>
+                {kidswearTags.map((t) => {
+                  const isActive = tagFilter === t;
+                  return (
+                    <button
+                      key={t}
+                      type="button"
+                      onClick={() => setTagFilter(isActive ? null : t)}
+                      className="h-10 shrink-0 rounded-full px-4 font-display text-xs font-black uppercase tracking-wider active:scale-95"
+                      style={{ backgroundColor: isActive ? "var(--coral)" : "var(--cream)", color: isActive ? "var(--coral-foreground)" : "var(--ink)" }}
+                    >
+                      {t}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        )}
+
+        <section className="mb-4 grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+          <label className="flex min-w-0 items-center gap-2 rounded-full bg-card px-4 py-3">
+            <ArrowUpDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+            <span className="shrink-0 font-display text-xs font-black uppercase tracking-wider text-muted-foreground">Sort</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortId)}
+              className="min-w-0 flex-1 bg-transparent font-display text-sm font-black outline-none"
+              style={{ color: "var(--ink)" }}
+            >
+              {SORT_OPTIONS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
+            </select>
+          </label>
+          <div className="rounded-full px-4 py-3 font-display text-xs font-black uppercase tracking-wider" style={{ backgroundColor: "var(--cream)", color: "var(--ink)" }}>
+            {sorted.length} items
+          </div>
+        </section>
+
         {items.length === 0 ? (
-          <div className="mt-10 flex flex-col items-center gap-3 rounded-3xl border-2 border-dashed border-border bg-card px-6 py-10 text-center">
+          <section className="mt-8 flex flex-col items-center gap-3 rounded-[28px] border border-dashed border-border bg-card px-6 py-10 text-center">
             <SearchX className="h-10 w-10" style={{ color: "var(--coral)" }} />
-            <h3 className="font-display text-lg font-black" style={{ color: "var(--ink)" }}>
-              No match {query.trim() ? `for "${query.trim()}"` : "for these filters"}
+            <h3 className="font-display text-xl font-black" style={{ color: "var(--ink)" }}>
+              No match {query.trim() ? `for “${query.trim()}”` : "for these filters"}
             </h3>
-            <p className="max-w-xs text-sm text-muted-foreground">
-              Try a different item code, size, or fabric.
-            </p>
+            <p className="max-w-xs text-sm font-semibold text-muted-foreground">Try another item code, barcode, size, or fabric.</p>
             {activeFilters && (
               <button
                 type="button"
                 onClick={() => { setQuery(""); setTagFilter(null); }}
-                className="rounded-full px-4 py-2 font-display text-xs font-black uppercase tracking-widest text-white"
-                style={{ backgroundColor: "var(--coral)" }}
+                className="h-12 rounded-full px-5 font-display text-xs font-black uppercase tracking-widest active:scale-95"
+                style={{ backgroundColor: "var(--coral)", color: "var(--coral-foreground)" }}
               >
                 Clear filters
               </button>
             )}
-          </div>
-        ) : null}
-
-        <div className="grid grid-cols-2 gap-3">
-          {items.map((p) => {
-            const qty = inCart(p.id);
-            const soldOut = p.stock - qty <= 0;
-            const isKidswear = active === "kidswear";
-            return (
-              <article
-                key={p.id}
-                className="group relative overflow-hidden rounded-3xl bg-card shadow-md transition-transform active:scale-[0.98]"
-                style={{ border: "2px solid var(--ink)" }}
-              >
-                <button
-                  type="button"
-                  onClick={() => isKidswear && setDetail(p as KidswearProduct)}
-                  className="relative block aspect-square w-full overflow-hidden text-left"
-                  style={{ backgroundColor: "var(--cream)" }}
-                  aria-label={isKidswear ? `View ${p.name}` : p.name}
-                >
-                  <img
-                    src={p.imageUrl}
-                    alt={p.name}
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                    draggable={false}
-                  />
-                  {p.featured && (
-                    <span
-                      className="absolute left-2 top-2 rounded-lg px-2 py-1 font-display text-[10px] font-black uppercase tracking-wider shadow-md"
-                      style={{ backgroundColor: "var(--sun)", color: "var(--ink)" }}
-                    >
-                      ★ Featured
-                    </span>
-                  )}
-                  {isKidswear && !soldOut && (
-                    <span
-                      className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-md"
-                      style={{ color: "var(--ink)" }}
-                    >
-                      <Info className="h-4 w-4" />
-                    </span>
-                  )}
-                  {soldOut && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/65">
-                      <span className="rounded-lg bg-white px-3 py-1.5 font-display text-xs font-black uppercase tracking-wider">
-                        Sold out
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Price flag — McDonald's-style yellow */}
-                  <div
-                    className="absolute -bottom-1 left-3 flex flex-col items-start rounded-lg px-2.5 py-1 shadow-lg"
-                    style={{ backgroundColor: "var(--sun)", color: "var(--ink)" }}
-                  >
-                    <span className="font-display text-lg font-black leading-none">{formatZAR(p.priceZAR)}</span>
-                    <span className="font-display text-[8px] font-black uppercase tracking-widest opacity-80">
-                      {isKidswear ? "Incl VAT" : formatUSD(p.priceUSD)}
-                    </span>
-                  </div>
-                </button>
-                <div className="p-3 pt-4">
-                  <h3 className="font-display text-sm font-black leading-tight line-clamp-2" style={{ color: "var(--ink)" }}>
-                    {p.name}
-                  </h3>
-                  <div className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-muted-foreground">
-                    <MapPin className="h-3 w-3 shrink-0" style={{ color: "var(--coral)" }} />
-                    <span className="truncate">{p.artisanName} · {p.artisanLocation}</span>
-                  </div>
-
+          </section>
+        ) : (
+          <section className="grid w-full min-w-0 grid-cols-2 gap-3">
+            {items.map((p) => {
+              const qty = inCart(p.id);
+              const soldOut = p.stock - qty <= 0;
+              const isKidswear = active === "kidswear";
+              return (
+                <article key={p.id} className="min-w-0 overflow-hidden rounded-[28px] bg-card shadow-sm">
                   <button
                     type="button"
-                    disabled={soldOut}
-                    onClick={() => onAdd(p)}
-                    className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-2xl font-display text-sm font-black uppercase tracking-widest text-white transition-transform active:scale-95 disabled:opacity-30"
-                    style={{
-                      backgroundColor: qty > 0 ? "var(--mint-deep, var(--mint))" : "var(--coral)",
-                      boxShadow: "0 6px 0 rgba(0,0,0,0.15)",
-                    }}
-                    aria-label={`Add ${p.name}`}
+                    onClick={() => isKidswear && setDetail(p as KidswearProduct)}
+                    className="relative block aspect-[1/1.08] w-full overflow-hidden text-left active:scale-[0.99]"
+                    style={{ backgroundColor: "var(--cream)" }}
+                    aria-label={isKidswear ? `View ${p.name}` : p.name}
                   >
-                    {qty > 0 ? (
-                      <>
-                        <Check className="h-4 w-4" />
-                        In cart · {qty}
-                      </>
-                    ) : (
-                      <>
-                        <Plus className="h-4 w-4" />
-                        Add
-                      </>
+                    <img src={p.imageUrl} alt={p.name} className="h-full w-full object-cover" loading="lazy" draggable={false} />
+                    <div className="absolute inset-x-0 bottom-0 p-3" style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.72))" }}>
+                      <div className="inline-flex rounded-full px-3 py-1 font-display text-sm font-black" style={{ backgroundColor: "var(--sun)", color: "var(--ink)" }}>
+                        {formatZAR(p.priceZAR)}
+                      </div>
+                    </div>
+                    {p.featured && (
+                      <span className="absolute left-2 top-2 rounded-full px-2.5 py-1 font-display text-[10px] font-black uppercase tracking-wider" style={{ backgroundColor: "var(--coral)", color: "var(--coral-foreground)" }}>
+                        Featured
+                      </span>
+                    )}
+                    {isKidswear && !soldOut && (
+                      <span className="absolute right-2 top-2 grid h-8 w-8 place-items-center rounded-full bg-card shadow-sm" style={{ color: "var(--ink)" }}>
+                        <Info className="h-4 w-4" />
+                      </span>
+                    )}
+                    {soldOut && (
+                      <div className="absolute inset-0 flex items-center justify-center" style={{ backgroundColor: "rgba(0,0,0,0.66)" }}>
+                        <span className="rounded-full bg-card px-3 py-1.5 font-display text-xs font-black uppercase tracking-wider">Sold out</span>
+                      </div>
                     )}
                   </button>
-                </div>
-              </article>
-            );
-          })}
-        </div>
+                  <div className="p-3">
+                    <h3 className="line-clamp-2 min-h-[38px] font-display text-[15px] font-black leading-tight" style={{ color: "var(--ink)", letterSpacing: "0" }}>
+                      {p.name}
+                    </h3>
+                    <div className="mt-1 truncate text-xs font-bold text-muted-foreground">
+                      {isKidswear ? "Incl VAT" : formatUSD(p.priceUSD)} · {p.artisanName}
+                    </div>
+                    <button
+                      type="button"
+                      disabled={soldOut}
+                      onClick={() => onAdd(p)}
+                      className="mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-full font-display text-sm font-black uppercase tracking-wider disabled:opacity-35 active:scale-95"
+                      style={{ backgroundColor: qty > 0 ? "var(--mint)" : "var(--coral)", color: qty > 0 ? "var(--ink)" : "var(--coral-foreground)" }}
+                      aria-label={`Add ${p.name}`}
+                    >
+                      {qty > 0 ? <><Check className="h-4 w-4" /> {qty} added</> : <><Plus className="h-4 w-4" /> Add</>}
+                    </button>
+                  </div>
+                </article>
+              );
+            })}
+          </section>
+        )}
 
         {pageCount > 1 && (
-          <div className="mt-6 flex items-center justify-center gap-3">
+          <section className="mt-6 flex w-full min-w-0 items-center justify-center gap-3 pb-24">
             <button
               type="button"
               disabled={safePage === 1}
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className="flex h-12 w-12 items-center justify-center rounded-2xl bg-card font-display disabled:opacity-30"
-              style={{ border: "2px solid var(--ink)", color: "var(--ink)" }}
+              className="grid h-13 w-13 place-items-center rounded-full bg-card disabled:opacity-30 active:scale-95"
+              style={{ color: "var(--ink)" }}
               aria-label="Previous page"
             >
               <ChevronLeft className="h-6 w-6" />
             </button>
-            <span
-              className="rounded-2xl px-4 py-3 font-display text-sm font-black uppercase tracking-widest"
-              style={{ backgroundColor: "var(--sun)", color: "var(--ink)" }}
-            >
+            <div className="rounded-full px-5 py-3 font-display text-sm font-black uppercase tracking-wider" style={{ backgroundColor: "var(--cream)", color: "var(--ink)" }}>
               Page {safePage} / {pageCount}
-            </span>
+            </div>
             <button
               type="button"
               disabled={safePage === pageCount}
               onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
-              className="flex h-12 w-12 items-center justify-center rounded-2xl font-display text-white disabled:opacity-30"
-              style={{ backgroundColor: "var(--coral)" }}
+              className="grid h-13 w-13 place-items-center rounded-full disabled:opacity-30 active:scale-95"
+              style={{ backgroundColor: "var(--coral)", color: "var(--coral-foreground)" }}
               aria-label="Next page"
             >
               <ChevronRight className="h-6 w-6" />
             </button>
-          </div>
+          </section>
         )}
-
-        <div className="mt-8 text-center text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">
-          Crafted in South Africa · Made in the bush
-        </div>
       </main>
 
-      {/* ═══════ PERSISTENT BASKET BAR ═══════ */}
       <button
         type="button"
         onClick={onOpenCart}
         disabled={itemCount === 0}
-        className="fixed bottom-0 left-0 right-0 mx-auto flex max-w-[480px] items-center justify-between px-4 py-4 font-display font-black transition-all disabled:opacity-60"
-        style={{
-          backgroundColor: "var(--ink)",
-          color: "white",
-          boxShadow: "0 -24px 50px -20px rgba(0,0,0,0.5)",
-          borderTop: "3px solid var(--coral)",
-        }}
+        className="z-20 m-3 grid h-[76px] min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[28px] px-4 font-display font-black shadow-xl disabled:opacity-60 active:scale-[0.99]"
+        style={{ backgroundColor: "var(--ink)", color: "var(--background)" }}
       >
-        <span className="flex items-center gap-3">
-          <span
-            className="relative flex h-14 w-14 items-center justify-center rounded-2xl"
-            style={{ backgroundColor: "var(--coral)" }}
-          >
-            <ShoppingBasket className="h-6 w-6" />
-            {itemCount > 0 && (
-              <span
-                className="absolute -right-1.5 -top-1.5 flex h-7 w-7 items-center justify-center rounded-full text-xs font-black shadow-md"
-                style={{ backgroundColor: "var(--sun)", color: "var(--ink)" }}
-              >
-                {itemCount}
-              </span>
-            )}
-          </span>
-          <span className="flex flex-col items-start leading-none">
-            <span className="text-[9px] font-black uppercase tracking-[0.3em] opacity-70">Basket</span>
-            <span className="mt-1 text-xl">{formatZAR(total)}</span>
-          </span>
+        <span className="relative grid h-12 w-12 place-items-center rounded-full" style={{ backgroundColor: "var(--coral)", color: "var(--coral-foreground)" }}>
+          <ShoppingBasket className="h-6 w-6" />
+          {itemCount > 0 && (
+            <span className="absolute -right-1 -top-1 grid h-6 w-6 place-items-center rounded-full text-xs" style={{ backgroundColor: "var(--sun)", color: "var(--ink)" }}>
+              {itemCount}
+            </span>
+          )}
         </span>
-        <span
-          className="rounded-2xl px-5 py-3 text-sm uppercase tracking-widest"
-          style={{
-            backgroundColor: itemCount > 0 ? "var(--coral)" : "transparent",
-            border: itemCount > 0 ? undefined : "2px solid rgba(255,255,255,0.2)",
-          }}
-        >
-          {itemCount > 0 ? "Checkout →" : "Empty"}
+        <span className="min-w-0 text-left">
+          <span className="block text-[10px] uppercase tracking-[0.28em] opacity-70">Basket total</span>
+          <span className="mt-1 block truncate text-2xl leading-none">{formatZAR(total)}</span>
+        </span>
+        <span className="rounded-full px-4 py-3 text-xs uppercase tracking-widest" style={{ backgroundColor: itemCount > 0 ? "var(--coral)" : "color-mix(in oklab, white 12%, transparent)", color: itemCount > 0 ? "var(--coral-foreground)" : "var(--background)" }}>
+          {itemCount > 0 ? "Checkout" : "Empty"}
         </span>
       </button>
 
-      {detail && (
-        <KidswearDetailScreen
-          product={detail}
-          inCart={inCart(detail.id)}
-          onAdd={() => onAdd(detail)}
-          onClose={() => setDetail(null)}
-        />
-      )}
+      {detail && <KidswearDetailScreen product={detail} inCart={inCart(detail.id)} onAdd={() => onAdd(detail)} onClose={() => setDetail(null)} />}
 
       {scannerOpen && (
         <BarcodeLookup
