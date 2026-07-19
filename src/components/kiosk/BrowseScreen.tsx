@@ -128,8 +128,8 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
   }, [active, query, tagFilter, sortBy]);
 
   return (
-    <div className="relative grid h-full w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden" style={{ backgroundColor: "var(--background)", color: "var(--ink)" }}>
-      <header className="shrink-0 border-b border-border bg-background px-4 pb-3 pt-4">
+    <div className="relative grid h-full w-full min-w-0 max-w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden" style={{ backgroundColor: "var(--background)", color: "var(--ink)" }}>
+      <header className="w-full min-w-0 max-w-full shrink-0 overflow-hidden border-b border-border bg-background px-4 pb-3 pt-4">
         <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2">
           <button type="button" onClick={onClose} className="flex min-w-0 items-center gap-2 text-left active:scale-95" aria-label="Home">
             <FruitfulLogo className="h-9 w-9 shrink-0" />
@@ -164,7 +164,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
           </h1>
         </div>
 
-        <nav className="mt-4 flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }} aria-label="Product categories">
+        <nav className="mt-4 flex w-full min-w-0 max-w-full gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }} aria-label="Product categories">
           {CATEGORIES.map((c) => {
             const isActive = c.id === active;
             return (
@@ -178,7 +178,6 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
                   color: isActive ? "var(--background)" : "var(--ink)",
                 }}
               >
-                <span className="text-lg" aria-hidden>{c.emoji}</span>
                 {c.label}
               </button>
             );
@@ -186,9 +185,9 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         </nav>
       </header>
 
-      <main className="min-h-0 overflow-y-auto px-4 pb-6 pt-4" style={{ WebkitOverflowScrolling: "touch" }}>
+      <main className="min-h-0 w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto px-4 pb-6 pt-4" style={{ WebkitOverflowScrolling: "touch" }}>
         <section
-          className="mb-4 overflow-hidden rounded-[28px]"
+          className="mb-4 w-full min-w-0 overflow-hidden rounded-[28px]"
           style={{ backgroundColor: "var(--mint)", boxShadow: "0 18px 40px rgba(0,0,0,0.08)" }}
         >
           <div className="grid grid-cols-[minmax(0,1fr)_96px] items-center gap-3 p-4">
@@ -197,7 +196,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
                 Fruitful selection
               </p>
               <h2 className="mt-1 font-display text-2xl font-black leading-none" style={{ letterSpacing: "0" }}>
-                {activeCat?.emoji} {sorted.length} pieces ready
+                {sorted.length} pieces ready
               </h2>
               <p className="mt-2 line-clamp-2 text-sm font-bold leading-tight" style={{ color: "color-mix(in oklab, var(--ink) 72%, transparent)" }}>
                 Tap a product for detail, add to basket, then check out from the fixed bar below.
@@ -210,7 +209,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         </section>
 
         {isKidswearCat && (
-          <section className="mb-4 space-y-3 rounded-[28px] bg-card p-3 shadow-sm">
+          <section className="mb-4 w-full min-w-0 space-y-3 rounded-[28px] bg-card p-3 shadow-sm">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
               <input
@@ -261,7 +260,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
           </section>
         )}
 
-        <section className="mb-4 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+        <section className="mb-4 grid w-full min-w-0 grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
           <label className="flex min-w-0 items-center gap-2 rounded-full bg-card px-4 py-3">
             <ArrowUpDown className="h-4 w-4 shrink-0 text-muted-foreground" />
             <span className="shrink-0 font-display text-xs font-black uppercase tracking-wider text-muted-foreground">Sort</span>
@@ -298,13 +297,13 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
             )}
           </section>
         ) : (
-          <section className="grid grid-cols-2 gap-3">
+          <section className="grid w-full min-w-0 grid-cols-2 gap-3">
             {items.map((p) => {
               const qty = inCart(p.id);
               const soldOut = p.stock - qty <= 0;
               const isKidswear = active === "kidswear";
               return (
-                <article key={p.id} className="overflow-hidden rounded-[28px] bg-card shadow-sm">
+                <article key={p.id} className="min-w-0 overflow-hidden rounded-[28px] bg-card shadow-sm">
                   <button
                     type="button"
                     onClick={() => isKidswear && setDetail(p as KidswearProduct)}
@@ -359,7 +358,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         )}
 
         {pageCount > 1 && (
-          <section className="mt-6 flex items-center justify-center gap-3 pb-24">
+          <section className="mt-6 flex w-full min-w-0 items-center justify-center gap-3 pb-24">
             <button
               type="button"
               disabled={safePage === 1}
@@ -391,7 +390,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         type="button"
         onClick={onOpenCart}
         disabled={itemCount === 0}
-        className="z-20 m-3 grid h-[76px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[28px] px-4 font-display font-black shadow-xl disabled:opacity-60 active:scale-[0.99]"
+        className="z-20 m-3 grid h-[76px] min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[28px] px-4 font-display font-black shadow-xl disabled:opacity-60 active:scale-[0.99]"
         style={{ backgroundColor: "var(--ink)", color: "var(--background)" }}
       >
         <span className="relative grid h-12 w-12 place-items-center rounded-full" style={{ backgroundColor: "var(--coral)", color: "var(--coral-foreground)" }}>
