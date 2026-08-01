@@ -1,17 +1,16 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  * Kiosk scroll utilities.
  *
  * - One root vertical scroller per screen (no nested scroll traps).
  * - Sticky header / bottom dock heights are measured and exposed as CSS vars
- *   so content never sits underneath them on any screen size.
- * - Scroll position is remembered per screen key so returning to a screen
+ *   plus scroll-padding, so anchors and content never hide behind them.
+ * - Scroll position is remembered per screen key, so returning to a screen
  *   lands you exactly where you left off.
  */
 
 const positions = new Map<string, number>();
-if (typeof window !== "undefined") { const w = window as any; w.__posList = (w.__posList||[]); w.__posList.push(positions); w.__pos = positions; }
 
 export function getSavedScroll(key: string) {
   return positions.get(key) ?? 0;
@@ -24,21 +23,30 @@ export function clearSavedScroll(key: string) {
 type Options = {
   /** Unique key per kiosk screen, e.g. "browse" or "cart". */
   key: string;
-  /** Restoration is skipped until this is true (e.g. data loaded). */
+  /** Restoration waits until this is true (e.g. data loaded). */
   ready?: boolean;
 };
 
 export function useKioskScroll({ key, ready = true }: Options) {
-  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const [root, setRoot] = useState<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
   const dockRef = useRef<HTMLElement | null>(null);
   const restored = useRef(false);
 
-  // Measure sticky chrome so content/anchors never hide behind it.
-  useEffect(() => {
-    const root = scrollRef.current;
-    if (!root) return;
+  const scrollRef = useCallback((node: HTMLDivElement | null) => {
+    rootRef.current = node;
+    setRoot(node);
+  }, []);
 
+  const onScroll = useCallback(() => {
+    const el = rootRef.current;
+    if (el) positions.set(key, el.scrollTop);
+  }, [key]);
+
+  // Measure sticky chrome so content/anchors never sit under it.
+  useEffect(() => {
+    if (!root) return;
     const sync = () => {
       const h = headerRef.current?.getBoundingClientRect().height ?? 0;
       const d = dockRef.current?.getBoundingClientRect().height ?? 0;
@@ -47,7 +55,6 @@ export function useKioskScroll({ key, ready = true }: Options) {
       root.style.scrollPaddingTop = `${Math.round(h) + 12}px`;
       root.style.scrollPaddingBottom = `${Math.round(d) + 12}px`;
     };
-
     sync();
     const ro = new ResizeObserver(sync);
     if (headerRef.current) ro.observe(headerRef.current);
@@ -60,67 +67,47 @@ export function useKioskScroll({ key, ready = true }: Options) {
       window.removeEventListener("resize", sync);
       window.removeEventListener("orientationchange", sync);
     };
-  }, []);
-
-  // Persist scroll position.
-  useEffect(() => {
-    const root = scrollRef.current;
-    if (!root) return;
-    const onScroll = () => positions.set(key, root.scrollTop);
-    root.addEventListener("scroll", onScroll, { passive: true });
-    // Note: do NOT re-save on cleanup — the element is already being torn down
-    // and reports scrollTop 0, which would wipe the position we want to keep.
-    return () => root.removeEventListener("scroll", onScroll);
-  }, [key]);
+  }, [root]);
 
   // Restore scroll position once content is ready. Content (images, async
   // lists) can grow after mount, so retry briefly until the target sticks.
   useEffect(() => {
-    const dbg = (m: string) => { (window as any).__rlog = ((window as any).__rlog||[]).concat([m]); };
-    dbg(`enter ready=${ready} restored=${restored.current} map=${JSON.stringify(Array.from(positions))}`);
-    if (!ready || restored.current) return;
-    const root = scrollRef.current;
-    if (!root) return;
+    if (!root || !ready || restored.current) return;
     const target = positions.get(key) ?? 0;
     if (target <= 0) {
       restored.current = true;
       return;
     }
-
     let frames = 0;
     let raf = 0;
     const tick = () => {
       frames += 1;
-      (window as any).__rlog = ((window as any).__rlog||[]).concat([[frames, root.scrollHeight, root.clientHeight, root.scrollTop]]);
       const max = Math.max(0, root.scrollHeight - root.clientHeight);
       root.scrollTop = Math.min(target, max);
-      if (Math.abs(root.scrollTop - target) <= 2) {
+      if (Math.abs(root.scrollTop - target) <= 2 || frames >= 180) {
         restored.current = true;
         return;
       }
-      if (frames < 180) raf = requestAnimationFrame(tick);
-      else restored.current = true;
+      raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [key, ready]);
-
+  }, [root, key, ready]);
 
   const jumpTo = useCallback((sectionId: string) => {
-    const root = scrollRef.current;
-    if (!root) return;
-    const el = root.querySelector<HTMLElement>(`[data-kiosk-section="${sectionId}"]`);
+    const el = rootRef.current;
     if (!el) return;
-    const headerH = parseInt(root.style.getPropertyValue("--kiosk-header-h") || "0", 10);
-    const top = el.offsetTop - headerH - 12;
-    root.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+    const target = el.querySelector<HTMLElement>(`[data-kiosk-section="${sectionId}"]`);
+    if (!target) return;
+    const headerH = parseInt(el.style.getPropertyValue("--kiosk-header-h") || "0", 10);
+    el.scrollTo({ top: Math.max(0, target.offsetTop - headerH - 12), behavior: "smooth" });
   }, []);
 
   const jumpToTop = useCallback(() => {
-    scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+    rootRef.current?.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
 
-  return { scrollRef, headerRef, dockRef, jumpTo, jumpToTop };
+  return { scrollRef, onScroll, headerRef, dockRef, jumpTo, jumpToTop };
 }
 
 /** Classes for the single root scroller of every kiosk screen. */
