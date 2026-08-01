@@ -390,8 +390,8 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         type="button"
         onClick={onOpenCart}
         disabled={itemCount === 0}
-        className="z-20 m-3 grid h-[76px] min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[28px] px-4 font-display font-black shadow-xl disabled:opacity-60 active:scale-[0.99]"
-        style={{ backgroundColor: "var(--ink)", color: "var(--background)" }}
+        className="sticky bottom-0 z-20 m-3 grid h-[76px] min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[28px] px-4 font-display font-black shadow-xl disabled:opacity-60 active:scale-[0.99]"
+        style={{ backgroundColor: "var(--ink)", color: "var(--background)", width: "calc(100% - 1.5rem)" }}
       >
         <span className="relative grid h-12 w-12 place-items-center rounded-full" style={{ backgroundColor: "var(--coral)", color: "var(--coral-foreground)" }}>
           <ShoppingBasket className="h-6 w-6" />
