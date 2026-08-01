@@ -75,6 +75,8 @@ export function useKioskScroll({ key, ready = true }: Options) {
   // Restore scroll position once content is ready. Content (images, async
   // lists) can grow after mount, so retry briefly until the target sticks.
   useEffect(() => {
+    const dbg = (m: string) => { (window as any).__rlog = ((window as any).__rlog||[]).concat([m]); };
+    dbg(`enter ready=${ready} restored=${restored.current} map=${JSON.stringify(Array.from(positions))}`);
     if (!ready || restored.current) return;
     const root = scrollRef.current;
     if (!root) return;
