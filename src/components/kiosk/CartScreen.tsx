@@ -1,6 +1,7 @@
 import { formatZAR } from "@/lib/catalog";
 import type { CartLine } from "@/lib/kiosk-store";
 import { ArrowLeft, Minus, Plus, Trash2 } from "lucide-react";
+import { KIOSK_SCROLLER_CLASS, useKioskScroll } from "@/lib/kiosk-scroll";
 
 type Props = {
   cart: CartLine[];
@@ -13,9 +14,18 @@ type Props = {
 };
 
 export function CartScreen({ cart, total, onBack, onAdd, onDecrement, onRemove, onCheckout }: Props) {
+  const { scrollRef, onScroll, headerRef, dockRef } = useKioskScroll({ key: "cart" });
+
   return (
-    <div className="h-full w-full overflow-x-hidden overflow-y-auto overscroll-contain" style={{ backgroundColor: "var(--background)", WebkitOverflowScrolling: "touch" }}>
+    <div
+      ref={scrollRef}
+      onScroll={onScroll}
+      data-kiosk-scroller="cart"
+      className={KIOSK_SCROLLER_CLASS}
+      style={{ backgroundColor: "var(--background)", WebkitOverflowScrolling: "touch" }}
+    >
       <header
+        ref={headerRef}
         className="sticky top-0 z-30 flex items-center justify-between px-5 pb-4 pt-5"
         style={{ backgroundColor: "var(--mint)" }}
       >
@@ -32,7 +42,7 @@ export function CartScreen({ cart, total, onBack, onAdd, onDecrement, onRemove, 
         <div className="w-[88px]" />
       </header>
 
-      <main className="px-4 py-4 pb-40">
+      <main className="px-4 pt-4" style={{ paddingBottom: "1.5rem" }}>
         {cart.length === 0 ? (
           <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
             <p className="font-display text-2xl font-bold" style={{ color: "var(--ink)" }}>
@@ -111,7 +121,8 @@ export function CartScreen({ cart, total, onBack, onAdd, onDecrement, onRemove, 
       {/* Checkout dock */}
       {cart.length > 0 && (
         <div
-          className="fixed bottom-0 left-0 right-0 mx-auto max-w-[480px] px-4 pb-5 pt-3"
+          ref={(el) => { dockRef.current = el; }}
+          className="sticky bottom-0 left-0 right-0 z-20 mx-auto w-full max-w-[480px] px-4 pb-5 pt-3"
           style={{
             background: "linear-gradient(to top, var(--background) 70%, transparent)",
           }}
