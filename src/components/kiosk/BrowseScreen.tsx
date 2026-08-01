@@ -164,7 +164,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
           </h1>
         </div>
 
-        <nav className="mt-4 flex w-full min-w-0 max-w-full gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }} aria-label="Product categories">
+        <nav className="mt-4 flex w-full min-w-0 max-w-full flex-wrap gap-2" aria-label="Product categories">
           {CATEGORIES.map((c) => {
             const isActive = c.id === active;
             return (
