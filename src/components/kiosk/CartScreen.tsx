@@ -32,9 +32,9 @@ export function CartScreen({ cart, total, onBack, onAdd, onDecrement, onRemove, 
         <div className="w-[88px]" />
       </header>
 
-      <main className="flex-1 overflow-y-auto px-4 py-4 pb-40">
+      <main className="px-4 py-4 pb-40">
         {cart.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center text-center">
+          <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
             <p className="font-display text-2xl font-bold" style={{ color: "var(--ink)" }}>
               Your basket is empty.
             </p>
