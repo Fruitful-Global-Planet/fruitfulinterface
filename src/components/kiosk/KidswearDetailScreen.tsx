@@ -21,9 +21,9 @@ export function KidswearDetailScreen({ product, inCart, onAdd, onClose }: Props)
   const soldOut = product.stock - inCart <= 0;
 
   return (
-    <div className="fixed inset-0 z-50 mx-auto flex max-w-[480px] flex-col bg-background">
+    <div className="fixed inset-0 z-50 mx-auto max-w-[480px] overflow-x-hidden overflow-y-auto overscroll-contain bg-background" style={{ WebkitOverflowScrolling: "touch" }}>
       {/* Hero image with banner backdrop */}
-      <div className="relative shrink-0">
+      <div className="relative">
         <div
           className="absolute inset-0 -z-10"
           style={{
@@ -58,7 +58,7 @@ export function KidswearDetailScreen({ product, inCart, onAdd, onClose }: Props)
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto px-5 pb-40 pt-5">
+      <div className="px-5 pb-6 pt-5">
         <h1 className="font-display text-2xl font-bold leading-tight" style={{ color: "var(--ink)" }}>
           {product.name}
         </h1>
@@ -141,7 +141,7 @@ export function KidswearDetailScreen({ product, inCart, onAdd, onClose }: Props)
       </div>
 
       {/* Sticky add-to-basket */}
-      <div className="fixed inset-x-0 bottom-0 mx-auto max-w-[480px] border-t border-border bg-background/95 p-4 backdrop-blur">
+      <div className="sticky bottom-0 z-20 border-t border-border bg-background/95 p-4 backdrop-blur">
         <button
           type="button"
           disabled={soldOut}

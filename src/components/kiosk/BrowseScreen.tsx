@@ -128,8 +128,8 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
   }, [active, query, tagFilter, sortBy]);
 
   return (
-    <div className="relative grid h-full w-full min-w-0 max-w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden" style={{ backgroundColor: "var(--background)", color: "var(--ink)" }}>
-      <header className="w-full min-w-0 max-w-full shrink-0 overflow-hidden border-b border-border bg-background px-4 pb-3 pt-4">
+    <div className="relative h-full w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto overscroll-contain" style={{ backgroundColor: "var(--background)", color: "var(--ink)", WebkitOverflowScrolling: "touch" }}>
+      <header className="sticky top-0 z-30 w-full min-w-0 max-w-full border-b border-border bg-background px-4 pb-3 pt-4">
         <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2">
           <button type="button" onClick={onClose} className="flex min-w-0 items-center gap-2 text-left active:scale-95" aria-label="Home">
             <FruitfulLogo className="h-9 w-9 shrink-0" />
@@ -164,7 +164,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
           </h1>
         </div>
 
-        <nav className="mt-4 flex w-full min-w-0 max-w-full gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }} aria-label="Product categories">
+        <nav className="mt-4 flex w-full min-w-0 max-w-full flex-wrap gap-2" aria-label="Product categories">
           {CATEGORIES.map((c) => {
             const isActive = c.id === active;
             return (
@@ -185,7 +185,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         </nav>
       </header>
 
-      <main className="min-h-0 w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto px-4 pb-6 pt-4" style={{ WebkitOverflowScrolling: "touch" }}>
+      <main className="w-full min-w-0 max-w-full px-4 pb-6 pt-4">
         <section
           className="mb-4 w-full min-w-0 overflow-hidden rounded-[28px]"
           style={{ backgroundColor: "var(--mint)", boxShadow: "0 18px 40px rgba(0,0,0,0.08)" }}
@@ -232,7 +232,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
             </div>
 
             {kidswearTags.length > 0 && (
-              <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+              <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
                   onClick={() => setTagFilter(null)}
@@ -390,8 +390,8 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         type="button"
         onClick={onOpenCart}
         disabled={itemCount === 0}
-        className="z-20 m-3 grid h-[76px] min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[28px] px-4 font-display font-black shadow-xl disabled:opacity-60 active:scale-[0.99]"
-        style={{ backgroundColor: "var(--ink)", color: "var(--background)" }}
+        className="sticky bottom-0 z-20 m-3 grid h-[76px] min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-[28px] px-4 font-display font-black shadow-xl disabled:opacity-60 active:scale-[0.99]"
+        style={{ backgroundColor: "var(--ink)", color: "var(--background)", width: "calc(100% - 1.5rem)" }}
       >
         <span className="relative grid h-12 w-12 place-items-center rounded-full" style={{ backgroundColor: "var(--coral)", color: "var(--coral-foreground)" }}>
           <ShoppingBasket className="h-6 w-6" />
