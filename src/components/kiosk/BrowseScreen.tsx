@@ -185,7 +185,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         </nav>
       </header>
 
-      <main className="min-h-0 w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto px-4 pb-6 pt-4" style={{ WebkitOverflowScrolling: "touch" }}>
+      <main className="w-full min-w-0 max-w-full px-4 pb-6 pt-4">
         <section
           className="mb-4 w-full min-w-0 overflow-hidden rounded-[28px]"
           style={{ backgroundColor: "var(--mint)", boxShadow: "0 18px 40px rgba(0,0,0,0.08)" }}
