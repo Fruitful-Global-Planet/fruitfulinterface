@@ -14,11 +14,12 @@ type Props = {
 };
 
 export function CartScreen({ cart, total, onBack, onAdd, onDecrement, onRemove, onCheckout }: Props) {
-  const { scrollRef, headerRef, dockRef } = useKioskScroll({ key: "cart" });
+  const { scrollRef, onScroll, headerRef, dockRef } = useKioskScroll({ key: "cart" });
 
   return (
     <div
       ref={scrollRef}
+      onScroll={onScroll}
       data-kiosk-scroller="cart"
       className={KIOSK_SCROLLER_CLASS}
       style={{ backgroundColor: "var(--background)", WebkitOverflowScrolling: "touch" }}

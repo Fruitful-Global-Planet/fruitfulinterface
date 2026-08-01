@@ -125,7 +125,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
   const activeCat = CATEGORIES.find((c) => c.id === active);
   const inCart = (id: string) => cart.find((l) => l.product.id === id)?.qty ?? 0;
 
-  const { scrollRef, headerRef, dockRef, jumpTo } = useKioskScroll({
+  const { scrollRef, onScroll, headerRef, dockRef, jumpTo } = useKioskScroll({
     key: "browse",
     ready: baseItems.length > 0,
   });
@@ -149,6 +149,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
   return (
     <div
       ref={scrollRef}
+      onScroll={onScroll}
       data-kiosk-scroller="browse"
       className={KIOSK_SCROLLER_CLASS}
       style={{ backgroundColor: "var(--background)", color: "var(--ink)", WebkitOverflowScrolling: "touch" }}
