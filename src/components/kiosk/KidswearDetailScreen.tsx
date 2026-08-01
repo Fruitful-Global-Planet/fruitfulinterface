@@ -58,7 +58,7 @@ export function KidswearDetailScreen({ product, inCart, onAdd, onClose }: Props)
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto px-5 pb-40 pt-5">
+      <div className="px-5 pb-6 pt-5">
         <h1 className="font-display text-2xl font-bold leading-tight" style={{ color: "var(--ink)" }}>
           {product.name}
         </h1>
