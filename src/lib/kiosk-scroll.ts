@@ -11,6 +11,7 @@ import { useCallback, useEffect, useRef } from "react";
  */
 
 const positions = new Map<string, number>();
+if (typeof window !== "undefined") { const w = window as any; w.__posList = (w.__posList||[]); w.__posList.push(positions); w.__pos = positions; }
 
 export function getSavedScroll(key: string) {
   return positions.get(key) ?? 0;
