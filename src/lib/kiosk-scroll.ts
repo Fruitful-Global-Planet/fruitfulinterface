@@ -79,22 +79,28 @@ export function useKioskScroll({ key, ready = true }: Options) {
     const root = scrollRef.current;
     if (!root) return;
     const target = positions.get(key) ?? 0;
-    restored.current = true;
-    if (target <= 0) return;
+    if (target <= 0) {
+      restored.current = true;
+      return;
+    }
 
     let frames = 0;
     let raf = 0;
     const tick = () => {
       frames += 1;
-      const max = root.scrollHeight - root.clientHeight;
-      root.scrollTop = Math.min(target, Math.max(0, max));
-      if (Math.abs(root.scrollTop - target) > 2 && frames < 180) {
-        raf = requestAnimationFrame(tick);
+      const max = Math.max(0, root.scrollHeight - root.clientHeight);
+      root.scrollTop = Math.min(target, max);
+      if (Math.abs(root.scrollTop - target) <= 2) {
+        restored.current = true;
+        return;
       }
+      if (frames < 180) raf = requestAnimationFrame(tick);
+      else restored.current = true;
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
   }, [key, ready]);
+
 
   const jumpTo = useCallback((sectionId: string) => {
     const root = scrollRef.current;
