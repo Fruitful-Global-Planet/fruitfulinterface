@@ -88,6 +88,7 @@ export function useKioskScroll({ key, ready = true }: Options) {
     let raf = 0;
     const tick = () => {
       frames += 1;
+      (window as any).__rlog = ((window as any).__rlog||[]).concat([[frames, root.scrollHeight, root.clientHeight, root.scrollTop]]);
       const max = Math.max(0, root.scrollHeight - root.clientHeight);
       root.scrollTop = Math.min(target, max);
       if (Math.abs(root.scrollTop - target) <= 2) {
