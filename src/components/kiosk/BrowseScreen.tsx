@@ -20,6 +20,8 @@ import { useSamFoxPrints } from "@/lib/samfox-prints";
 import { BarcodeLookup } from "./BarcodeLookup";
 import { FruitfulLogo, FruitfulWordmark } from "./FruitfulLogo";
 import { KidswearDetailScreen } from "./KidswearDetailScreen";
+import { KIOSK_SCROLLER_CLASS, useKioskScroll } from "@/lib/kiosk-scroll";
+
 
 type SortId = "featured" | "price-asc" | "price-desc" | "name" | "newest";
 
@@ -123,13 +125,36 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
   const activeCat = CATEGORIES.find((c) => c.id === active);
   const inCart = (id: string) => cart.find((l) => l.product.id === id)?.qty ?? 0;
 
+  const { scrollRef, headerRef, dockRef, jumpTo } = useKioskScroll({
+    key: "browse",
+    ready: baseItems.length > 0,
+  });
+
+
+
   useEffect(() => {
     setPage(1);
   }, [active, query, tagFilter, sortBy]);
 
+  const jumpTargets = useMemo(
+    () => [
+      { id: "highlight", label: "Overview" },
+      ...(isKidswearCat ? [{ id: "filters", label: "Filters" }] : []),
+      { id: "products", label: "Products" },
+      ...(pageCount > 1 ? [{ id: "pages", label: "Pages" }] : []),
+    ],
+    [isKidswearCat, pageCount],
+  );
+
   return (
-    <div className="relative h-full w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto overscroll-contain" style={{ backgroundColor: "var(--background)", color: "var(--ink)", WebkitOverflowScrolling: "touch" }}>
-      <header className="sticky top-0 z-30 w-full min-w-0 max-w-full border-b border-border bg-background px-4 pb-3 pt-4">
+    <div
+      ref={scrollRef}
+      data-kiosk-scroller="browse"
+      className={KIOSK_SCROLLER_CLASS}
+      style={{ backgroundColor: "var(--background)", color: "var(--ink)", WebkitOverflowScrolling: "touch" }}
+    >
+      <header ref={headerRef} className="sticky top-0 z-30 w-full min-w-0 max-w-full border-b border-border bg-background px-4 pb-3 pt-4">
+
         <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2">
           <button type="button" onClick={onClose} className="flex min-w-0 items-center gap-2 text-left active:scale-95" aria-label="Home">
             <FruitfulLogo className="h-9 w-9 shrink-0" />
@@ -183,13 +208,33 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
             );
           })}
         </nav>
+
+        <nav className="mt-3 flex w-full min-w-0 max-w-full flex-wrap gap-2" aria-label="Jump to section">
+          {jumpTargets.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              data-jump={t.id}
+              onClick={() => jumpTo(t.id)}
+              className="h-9 shrink-0 rounded-full px-3 font-display text-[11px] font-black uppercase tracking-[0.18em] active:scale-95"
+              style={{ backgroundColor: "var(--cream)", color: "var(--ink)" }}
+            >
+              {t.label}
+            </button>
+          ))}
+        </nav>
       </header>
 
-      <main className="w-full min-w-0 max-w-full px-4 pb-6 pt-4">
+      <main
+        className="w-full min-w-0 max-w-full px-4 pt-4"
+        style={{ paddingBottom: "1.5rem" }}
+      >
         <section
+          data-kiosk-section="highlight"
           className="mb-4 w-full min-w-0 overflow-hidden rounded-[28px]"
           style={{ backgroundColor: "var(--mint)", boxShadow: "0 18px 40px rgba(0,0,0,0.08)" }}
         >
+
           <div className="grid grid-cols-[minmax(0,1fr)_96px] items-center gap-3 p-4">
             <div className="min-w-0">
               <p className="font-display text-[10px] font-black uppercase tracking-[0.28em]" style={{ color: "color-mix(in oklab, var(--ink) 65%, transparent)" }}>
@@ -209,7 +254,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         </section>
 
         {isKidswearCat && (
-          <section className="mb-4 w-full min-w-0 space-y-3 rounded-[28px] bg-card p-3 shadow-sm">
+          <section data-kiosk-section="filters" className="mb-4 w-full min-w-0 space-y-3 rounded-[28px] bg-card p-3 shadow-sm">
             <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
               <input
@@ -279,7 +324,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         </section>
 
         {items.length === 0 ? (
-          <section className="mt-8 flex flex-col items-center gap-3 rounded-[28px] border border-dashed border-border bg-card px-6 py-10 text-center">
+          <section data-kiosk-section="products" className="mt-8 flex flex-col items-center gap-3 rounded-[28px] border border-dashed border-border bg-card px-6 py-10 text-center">
             <SearchX className="h-10 w-10" style={{ color: "var(--coral)" }} />
             <h3 className="font-display text-xl font-black" style={{ color: "var(--ink)" }}>
               No match {query.trim() ? `for “${query.trim()}”` : "for these filters"}
@@ -297,7 +342,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
             )}
           </section>
         ) : (
-          <section className="grid w-full min-w-0 grid-cols-2 gap-3">
+          <section data-kiosk-section="products" className="grid w-full min-w-0 grid-cols-2 gap-3">
             {items.map((p) => {
               const qty = inCart(p.id);
               const soldOut = p.stock - qty <= 0;
@@ -358,7 +403,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
         )}
 
         {pageCount > 1 && (
-          <section className="mt-6 flex w-full min-w-0 items-center justify-center gap-3 pb-24">
+          <section data-kiosk-section="pages" className="mt-6 flex w-full min-w-0 items-center justify-center gap-3">
             <button
               type="button"
               disabled={safePage === 1}
@@ -387,6 +432,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
       </main>
 
       <button
+        ref={(el) => { dockRef.current = el; }}
         type="button"
         onClick={onOpenCart}
         disabled={itemCount === 0}
