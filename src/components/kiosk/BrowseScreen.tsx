@@ -128,8 +128,8 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
   }, [active, query, tagFilter, sortBy]);
 
   return (
-    <div className="relative grid h-full w-full min-w-0 max-w-full grid-rows-[auto_minmax(0,1fr)_auto] overflow-hidden" style={{ backgroundColor: "var(--background)", color: "var(--ink)" }}>
-      <header className="w-full min-w-0 max-w-full shrink-0 overflow-hidden border-b border-border bg-background px-4 pb-3 pt-4">
+    <div className="relative h-full w-full min-w-0 max-w-full overflow-x-hidden overflow-y-auto overscroll-contain" style={{ backgroundColor: "var(--background)", color: "var(--ink)", WebkitOverflowScrolling: "touch" }}>
+      <header className="sticky top-0 z-30 w-full min-w-0 max-w-full border-b border-border bg-background px-4 pb-3 pt-4">
         <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-2">
           <button type="button" onClick={onClose} className="flex min-w-0 items-center gap-2 text-left active:scale-95" aria-label="Home">
             <FruitfulLogo className="h-9 w-9 shrink-0" />
