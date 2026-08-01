@@ -21,9 +21,9 @@ export function KidswearDetailScreen({ product, inCart, onAdd, onClose }: Props)
   const soldOut = product.stock - inCart <= 0;
 
   return (
-    <div className="fixed inset-0 z-50 mx-auto flex max-w-[480px] flex-col bg-background">
+    <div className="fixed inset-0 z-50 mx-auto max-w-[480px] overflow-x-hidden overflow-y-auto overscroll-contain bg-background" style={{ WebkitOverflowScrolling: "touch" }}>
       {/* Hero image with banner backdrop */}
-      <div className="relative shrink-0">
+      <div className="relative">
         <div
           className="absolute inset-0 -z-10"
           style={{
