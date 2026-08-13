@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+type Json = string | number | boolean | null;
+
 // API Ninjas integrations. All calls run server-side so the API key never
 // reaches the browser.
 
@@ -52,7 +54,7 @@ export const validateVat = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { ninjaJson } = await import("./ninjas.server");
     const qs = new URLSearchParams({ vat: data.vat });
-    return ninjaJson<Record<string, unknown>>(`vatvalidation?${qs}`);
+    return ninjaJson<Record<string, Json>>(`vatvalidation?${qs}`);
   });
 
 export const getUnemployment = createServerFn({ method: "POST" })
@@ -60,7 +62,7 @@ export const getUnemployment = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { ninjaJson } = await import("./ninjas.server");
     const qs = new URLSearchParams({ country: data.country });
-    return ninjaJson<Array<Record<string, unknown>>>(`unemployment?${qs}`);
+    return ninjaJson<Array<Record<string, Json>>>(`unemployment?${qs}`);
   });
 
 export const lookupIp = createServerFn({ method: "POST" })
@@ -68,5 +70,5 @@ export const lookupIp = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { ninjaJson } = await import("./ninjas.server");
     const qs = new URLSearchParams({ address: data.address });
-    return ninjaJson<Record<string, unknown>>(`iplookup?${qs}`);
+    return ninjaJson<Record<string, Json>>(`iplookup?${qs}`);
   });
