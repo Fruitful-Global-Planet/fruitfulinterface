@@ -10,6 +10,7 @@ function AdminLayout() {
   const tabs = [
     { to: "/admin/prints", label: "SamFox Prints" },
     { to: "/admin/kidswear", label: "Bashedi Kidswear" },
+    { to: "/admin/tools", label: "Data Tools" },
   ];
   return (
     <div className="min-h-svh bg-background text-foreground">
