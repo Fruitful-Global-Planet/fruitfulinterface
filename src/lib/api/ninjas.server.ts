@@ -42,7 +42,11 @@ export async function ninjaImage(path: string, mime = "image/png"): Promise<Ninj
     const buf = new Uint8Array(await res.arrayBuffer());
     let binary = "";
     for (let i = 0; i < buf.length; i++) binary += String.fromCharCode(buf[i]!);
-    return { ok: true, data: `data:${mime};base64,${btoa(binary)}` };
+    // Some endpoints return the image already base64-encoded as text.
+    const b64 = /^[A-Za-z0-9+/=\s]+$/.test(binary) && binary.trimStart().startsWith("iVBOR")
+      ? binary.trim()
+      : btoa(binary);
+    return { ok: true, data: `data:${mime};base64,${b64}` };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : String(e) };
   }
