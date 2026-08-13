@@ -46,7 +46,12 @@ export const generateBarcode = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { ninjaImage } = await import("./ninjas.server");
     const qs = new URLSearchParams({ data: data.value, format: "png" });
-    return ninjaImage(`barcode?${qs}`);
+    const res = await ninjaImage(`barcode?${qs}`);
+    if (res.ok) return res;
+    // API Ninjas barcode endpoint isn't available on every plan — render
+    // a Code128 barcode locally so kiosk staff still get a scannable label.
+    const { code128SvgDataUrl } = await import("../barcode-code128");
+    return { ok: true as const, data: code128SvgDataUrl(data.value) };
   });
 
 export const validateVat = createServerFn({ method: "POST" })
