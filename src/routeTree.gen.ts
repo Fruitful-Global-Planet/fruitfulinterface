@@ -9,22 +9,22 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminToolsRouteImport } from './routes/admin.tools'
-import { Route as AdminPrintsRouteImport } from './routes/admin.prints'
-import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminKidswearRouteImport } from './routes/admin.kidswear'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
+import { Route as AdminPrintsRouteImport } from './routes/admin.prints'
+import { Route as AdminToolsRouteImport } from './routes/admin.tools'
 
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -32,14 +32,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminToolsRoute = AdminToolsRouteImport.update({
-  id: '/tools',
-  path: '/tools',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPrintsRoute = AdminPrintsRouteImport.update({
-  id: '/prints',
-  path: '/prints',
+const AdminKidswearRoute = AdminKidswearRouteImport.update({
+  id: '/kidswear',
+  path: '/kidswear',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
@@ -47,9 +42,14 @@ const AdminOrdersRoute = AdminOrdersRouteImport.update({
   path: '/orders',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminKidswearRoute = AdminKidswearRouteImport.update({
-  id: '/kidswear',
-  path: '/kidswear',
+const AdminPrintsRoute = AdminPrintsRouteImport.update({
+  id: '/prints',
+  path: '/prints',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminToolsRoute = AdminToolsRouteImport.update({
+  id: '/tools',
+  path: '/tools',
   getParentRoute: () => AdminRoute,
 } as any)
 
@@ -116,18 +116,18 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -137,18 +137,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/tools': {
-      id: '/admin/tools'
-      path: '/tools'
-      fullPath: '/admin/tools'
-      preLoaderRoute: typeof AdminToolsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/prints': {
-      id: '/admin/prints'
-      path: '/prints'
-      fullPath: '/admin/prints'
-      preLoaderRoute: typeof AdminPrintsRouteImport
+    '/admin/kidswear': {
+      id: '/admin/kidswear'
+      path: '/kidswear'
+      fullPath: '/admin/kidswear'
+      preLoaderRoute: typeof AdminKidswearRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/orders': {
@@ -158,11 +151,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/kidswear': {
-      id: '/admin/kidswear'
-      path: '/kidswear'
-      fullPath: '/admin/kidswear'
-      preLoaderRoute: typeof AdminKidswearRouteImport
+    '/admin/prints': {
+      id: '/admin/prints'
+      path: '/prints'
+      fullPath: '/admin/prints'
+      preLoaderRoute: typeof AdminPrintsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/tools': {
+      id: '/admin/tools'
+      path: '/tools'
+      fullPath: '/admin/tools'
+      preLoaderRoute: typeof AdminToolsRouteImport
       parentRoute: typeof AdminRoute
     }
   }
