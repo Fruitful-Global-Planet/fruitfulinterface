@@ -8,6 +8,7 @@ export const Route = createFileRoute("/admin")({
 function AdminLayout() {
   const path = useRouterState({ select: (s) => s.location.pathname });
   const tabs = [
+    { to: "/admin/orders", label: "Orders" },
     { to: "/admin/prints", label: "SamFox Prints" },
     { to: "/admin/kidswear", label: "Bashedi Kidswear" },
     { to: "/admin/tools", label: "Data Tools" },

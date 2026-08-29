@@ -15,6 +15,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminToolsRouteImport } from './routes/admin.tools'
 import { Route as AdminPrintsRouteImport } from './routes/admin.prints'
 import { Route as AdminKidswearRouteImport } from './routes/admin.kidswear'
+import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
@@ -46,11 +47,17 @@ const AdminKidswearRoute = AdminKidswearRouteImport.update({
   path: '/kidswear',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminOrdersRoute = AdminOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin/kidswear': typeof AdminKidswearRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/admin/prints': typeof AdminPrintsRoute
   '/admin/tools': typeof AdminToolsRoute
   '/admin/': typeof AdminIndexRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin/kidswear': typeof AdminKidswearRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/admin/prints': typeof AdminPrintsRoute
   '/admin/tools': typeof AdminToolsRoute
   '/admin': typeof AdminIndexRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/admin/kidswear': typeof AdminKidswearRoute
+  '/admin/orders': typeof AdminOrdersRoute
   '/admin/prints': typeof AdminPrintsRoute
   '/admin/tools': typeof AdminToolsRoute
   '/admin/': typeof AdminIndexRoute
@@ -77,16 +86,18 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/admin/kidswear'
+    | '/admin/orders'
     | '/admin/prints'
     | '/admin/tools'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin/kidswear' | '/admin/prints' | '/admin/tools' | '/admin'
+  to: '/' | '/admin/kidswear' | '/admin/orders' | '/admin/prints' | '/admin/tools' | '/admin'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/admin/kidswear'
+    | '/admin/orders'
     | '/admin/prints'
     | '/admin/tools'
     | '/admin/'
@@ -141,11 +152,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminKidswearRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/orders': {
+      id: '/admin/orders'
+      path: '/orders'
+      fullPath: '/admin/orders'
+      preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
   AdminKidswearRoute: typeof AdminKidswearRoute
+  AdminOrdersRoute: typeof AdminOrdersRoute
   AdminPrintsRoute: typeof AdminPrintsRoute
   AdminToolsRoute: typeof AdminToolsRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -153,6 +172,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminKidswearRoute: AdminKidswearRoute,
+  AdminOrdersRoute: AdminOrdersRoute,
   AdminPrintsRoute: AdminPrintsRoute,
   AdminToolsRoute: AdminToolsRoute,
   AdminIndexRoute: AdminIndexRoute,

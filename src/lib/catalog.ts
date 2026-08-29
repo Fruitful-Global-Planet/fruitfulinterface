@@ -10,6 +10,7 @@ export type CategoryId =
   | "hats"
   | "kidswear"
   | "prints"
+  | "paintings"
   | "pottery"
   | "nourish"
   | "apparel";
@@ -24,6 +25,7 @@ export const CATEGORIES: Category[] = [
   { id: "hats", label: "Artisan Hats", emoji: "🎩" },
   { id: "kidswear", label: "Kidswear", emoji: "👗" },
   { id: "prints", label: "SamFox Prints", emoji: "🖼️" },
+  { id: "paintings", label: "Grand Paintings", emoji: "🎨" },
   { id: "pottery", label: "Pottery", emoji: "🏺" },
   { id: "nourish", label: "Nourishment", emoji: "☕" },
   { id: "apparel", label: "Apparel", emoji: "👕" },
@@ -44,6 +46,10 @@ export type Product = {
   artisanLocation: string;
   stock: number;
   featured?: boolean;
+  /** "subscription" = collected via monthly subscription, never an outright sale */
+  pricingModel?: "one-time" | "subscription";
+  /** Monthly subscription price in ZAR cents (when pricingModel === "subscription") */
+  subscriptionZAR?: number;
 };
 
 const u = (id: string, w = 800) =>
@@ -149,6 +155,8 @@ export const PRODUCTS: Product[] = [
     artisanLocation: "Cape Town, SA",
     stock: 12,
     featured: true,
+    pricingModel: "subscription",
+    subscriptionZAR: 14500,
   },
   {
     id: "p-elephant-matriarch",
@@ -162,6 +170,8 @@ export const PRODUCTS: Product[] = [
     artisanName: "Sam Fox",
     artisanLocation: "Cape Town, SA",
     stock: 18,
+    pricingModel: "subscription",
+    subscriptionZAR: 13000,
   },
   {
     id: "p-cheetah-sprint",
@@ -175,6 +185,8 @@ export const PRODUCTS: Product[] = [
     artisanName: "Sam Fox",
     artisanLocation: "Cape Town, SA",
     stock: 8,
+    pricingModel: "subscription",
+    subscriptionZAR: 16500,
   },
   {
     id: "p-black-rhino",
@@ -188,6 +200,42 @@ export const PRODUCTS: Product[] = [
     artisanName: "Sam Fox",
     artisanLocation: "Cape Town, SA",
     stock: 6,
+    pricingModel: "subscription",
+    subscriptionZAR: 17500,
+  },
+  {
+    id: "p-chief-original",
+    sku: "SF-CHIEF-01",
+    category: "prints",
+    name: "The Chief — Original",
+    description:
+      "Original Sam Fox illustration — the one-eyed guardian of the bush. One-of-one, hand-finished.",
+    priceZAR: 165000,
+    priceUSD: 10800,
+    imageUrl: "https://sc02.alicdn.com/kf/A5ac67f9e35b642d3a90b437a1f7f5644u.png",
+    artisanName: "Sam Fox",
+    artisanLocation: "Cape Town, SA",
+    stock: 3,
+    featured: true,
+    pricingModel: "subscription",
+    subscriptionZAR: 16500,
+  },
+  {
+    id: "p-grand-grant-a",
+    sku: "GRAND-001",
+    category: "prints",
+    name: "Grand — Grant A Canvas",
+    description:
+      "Hand-painted canvas by Grand Machadlela. One-of-one — no two alike.",
+    priceZAR: 245000,
+    priceUSD: 16000,
+    imageUrl: "https://sc02.alicdn.com/kf/A3a817b8ad35049bdbc11b078ea3c4af3d.png",
+    artisanName: "Grand Machadlela",
+    artisanLocation: "Mamelodi, SA",
+    stock: 2,
+    featured: true,
+    pricingModel: "subscription",
+    subscriptionZAR: 24500,
   },
 
   // ── POTTERY ───────────────────────────────────────────────────

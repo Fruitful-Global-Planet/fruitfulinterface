@@ -17,6 +17,7 @@ import { CATEGORIES, PRODUCTS, formatZAR, formatUSD, type CategoryId, type Produ
 import type { CartLine } from "@/lib/kiosk-store";
 import { useKidswear, type KidswearProduct } from "@/lib/kidswear";
 import { useSamFoxPrints } from "@/lib/samfox-prints";
+import { useGrandPaintings } from "@/lib/grand-paintings";
 import { BarcodeLookup } from "./BarcodeLookup";
 import { FruitfulLogo, FruitfulWordmark } from "./FruitfulLogo";
 import { KidswearDetailScreen } from "./KidswearDetailScreen";
@@ -54,12 +55,14 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
   const [page, setPage] = useState(1);
   const { products: dbPrints } = useSamFoxPrints();
   const { products: dbKidswear } = useKidswear();
+  const { products: dbPaintings } = useGrandPaintings();
 
   const baseItems = useMemo<Product[]>(() => {
     if (active === "prints") return dbPrints;
     if (active === "kidswear") return dbKidswear;
+    if (active === "paintings") return dbPaintings;
     return PRODUCTS.filter((p) => p.category === active);
-  }, [active, dbPrints, dbKidswear]);
+  }, [active, dbPrints, dbKidswear, dbPaintings]);
 
   const isKidswearCat = active === "kidswear";
 
@@ -348,6 +351,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
               const qty = inCart(p.id);
               const soldOut = p.stock - qty <= 0;
               const isKidswear = active === "kidswear";
+              const isSub = p.pricingModel === "subscription";
               return (
                 <article key={p.id} className="min-w-0 overflow-hidden rounded-[28px] bg-card shadow-sm">
                   <button
@@ -359,8 +363,9 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
                   >
                     <img src={p.imageUrl} alt={p.name} className="h-full w-full object-cover" loading="lazy" draggable={false} />
                     <div className="absolute inset-x-0 bottom-0 p-3" style={{ background: "linear-gradient(transparent, rgba(0,0,0,0.72))" }}>
-                      <div className="inline-flex rounded-full px-3 py-1 font-display text-sm font-black" style={{ backgroundColor: "var(--sun)", color: "var(--ink)" }}>
-                        {formatZAR(p.priceZAR)}
+                      <div className="inline-flex items-baseline gap-1 rounded-full px-3 py-1 font-display text-sm font-black" style={{ backgroundColor: "var(--sun)", color: "var(--ink)" }}>
+                        {formatZAR(isSub ? (p.subscriptionZAR ?? p.priceZAR) : p.priceZAR)}
+                        {isSub && <span className="text-[10px]">/mo</span>}
                       </div>
                     </div>
                     {p.featured && (
@@ -384,7 +389,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
                       {p.name}
                     </h3>
                     <div className="mt-1 truncate text-xs font-bold text-muted-foreground">
-                      {isKidswear ? "Incl VAT" : formatUSD(p.priceUSD)} · {p.artisanName}
+                      {isKidswear ? "Incl VAT" : isSub ? "Subscription · monthly" : formatUSD(p.priceUSD)} · {p.artisanName}
                     </div>
                     <button
                       type="button"
@@ -394,7 +399,7 @@ export function BrowseScreen({ cart, itemCount, total, onAdd, onOpenCart, onClos
                       style={{ backgroundColor: qty > 0 ? "var(--mint)" : "var(--coral)", color: qty > 0 ? "var(--ink)" : "var(--coral-foreground)" }}
                       aria-label={`Add ${p.name}`}
                     >
-                      {qty > 0 ? <><Check className="h-4 w-4" /> {qty} added</> : <><Plus className="h-4 w-4" /> Add</>}
+                      {qty > 0 ? <><Check className="h-4 w-4" /> {qty} {isSub ? "subscribed" : "added"}</> : <><Plus className="h-4 w-4" /> {isSub ? "Subscribe" : "Add"}</>}
                     </button>
                   </div>
                 </article>

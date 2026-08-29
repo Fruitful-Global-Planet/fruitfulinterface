@@ -18,8 +18,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Fruitful Portal · Kiosk" },
       {
         property: "og:description",
-        content:
-          "Changing seeds. Supporting local artisans. Crafted in South Africa.",
+        content: "Changing seeds. Supporting local artisans. Crafted in South Africa.",
       },
     ],
   }),
@@ -45,9 +44,7 @@ function Kiosk() {
       className="mx-auto flex h-svh max-w-[480px] flex-col overflow-hidden"
       style={{ backgroundColor: "var(--background)" }}
     >
-      {k.step === "attractor" && (
-        <AttractorScreen onBegin={() => k.setStep("browse")} />
-      )}
+      {k.step === "attractor" && <AttractorScreen onBegin={() => k.setStep("browse")} />}
 
       {k.step === "browse" && (
         <BrowseScreen
@@ -76,17 +73,14 @@ function Kiosk() {
         <PayingScreen
           total={k.total}
           orderRef={k.orderRef}
+          cart={k.cart}
           onCancel={k.cancelPayment}
           onComplete={k.completePayment}
         />
       )}
 
       {k.step === "success" && (
-        <SuccessScreen
-          total={k.total}
-          orderRef={k.orderRef}
-          onDone={k.resetToAttractor}
-        />
+        <SuccessScreen total={k.total} orderRef={k.orderRef} onDone={k.resetToAttractor} />
       )}
     </div>
   );
