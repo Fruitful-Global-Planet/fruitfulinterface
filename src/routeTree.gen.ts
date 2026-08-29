@@ -14,8 +14,8 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminToolsRouteImport } from './routes/admin.tools'
 import { Route as AdminPrintsRouteImport } from './routes/admin.prints'
-import { Route as AdminKidswearRouteImport } from './routes/admin.kidswear'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
+import { Route as AdminKidswearRouteImport } from './routes/admin.kidswear'
 
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
@@ -42,14 +42,14 @@ const AdminPrintsRoute = AdminPrintsRouteImport.update({
   path: '/prints',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminKidswearRoute = AdminKidswearRouteImport.update({
-  id: '/kidswear',
-  path: '/kidswear',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminOrdersRoute = AdminOrdersRouteImport.update({
   id: '/orders',
   path: '/orders',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminKidswearRoute = AdminKidswearRouteImport.update({
+  id: '/kidswear',
+  path: '/kidswear',
   getParentRoute: () => AdminRoute,
 } as any)
 
@@ -91,7 +91,13 @@ export interface FileRouteTypes {
     | '/admin/tools'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin/kidswear' | '/admin/orders' | '/admin/prints' | '/admin/tools' | '/admin'
+  to:
+    | '/'
+    | '/admin/kidswear'
+    | '/admin/orders'
+    | '/admin/prints'
+    | '/admin/tools'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -145,18 +151,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPrintsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/kidswear': {
-      id: '/admin/kidswear'
-      path: '/kidswear'
-      fullPath: '/admin/kidswear'
-      preLoaderRoute: typeof AdminKidswearRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/orders': {
       id: '/admin/orders'
       path: '/orders'
       fullPath: '/admin/orders'
       preLoaderRoute: typeof AdminOrdersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/kidswear': {
+      id: '/admin/kidswear'
+      path: '/kidswear'
+      fullPath: '/admin/kidswear'
+      preLoaderRoute: typeof AdminKidswearRouteImport
       parentRoute: typeof AdminRoute
     }
   }
