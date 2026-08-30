@@ -51,25 +51,15 @@
   --color-coral: var(--coral);
   --color-coral-foreground: var(--coral-foreground);
   --color-cream: var(--cream);
+  --color-cream-soft: var(--cream-soft);
+  --color-sand: var(--sand);
   --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
   --color-sun: var(--sun);
+  --color-amber: var(--amber);
+  --color-amber-deep: var(--amber-deep);
 }
 
-@font-face {
-  font-family: "Fredoka";
-  font-style: normal;
-  font-weight: 300 700;
-  font-display: swap;
-  src: url("https://fonts.gstatic.com/s/fredoka/v14/X7nP4b87HvSqjb_WIi2yDCRwoQ_k7367_B-i2yQag0-mac3O8WJBjL0HRy_8.woff2") format("woff2");
-}
-
-@font-face {
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 300 900;
-  font-display: swap;
-  src: url("https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDLshRTM9jo7eTWk.woff2") format("woff2");
-}
 
 :root {
   --radius: 1.25rem;
