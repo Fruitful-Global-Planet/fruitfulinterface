@@ -11,8 +11,9 @@
  * ============================================================ */
 
 @theme inline {
-  --font-display: "Fredoka", "Nunito", system-ui, sans-serif;
-  --font-body: "Nunito", system-ui, sans-serif;
+  --font-display: "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "Fira Code", ui-monospace, monospace;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
