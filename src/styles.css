@@ -160,8 +160,17 @@
     color: var(--color-foreground);
   }
 
-  h1, h2, h3, h4, .font-display {
+  /* Brand fundamentals: display type is italic, black, tight. */
+  h1, h2, h3, .font-display {
     font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+  }
+
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 800;
     letter-spacing: -0.01em;
   }
 }
