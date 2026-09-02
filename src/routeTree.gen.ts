@@ -19,6 +19,8 @@ import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminPrintsRouteImport } from './routes/admin.prints'
 import { Route as AdminToolsRouteImport } from './routes/admin.tools'
 import { Route as NexusIndexRouteImport } from './routes/nexus.index'
+import { Route as NexusApprovalsRouteImport } from './routes/nexus.approvals'
+import { Route as NexusItemsRouteImport } from './routes/nexus.items'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -70,6 +72,16 @@ const NexusIndexRoute = NexusIndexRouteImport.update({
   path: '/',
   getParentRoute: () => NexusRoute,
 } as any)
+const NexusApprovalsRoute = NexusApprovalsRouteImport.update({
+  id: '/approvals',
+  path: '/approvals',
+  getParentRoute: () => NexusRoute,
+} as any)
+const NexusItemsRoute = NexusItemsRouteImport.update({
+  id: '/items',
+  path: '/items',
+  getParentRoute: () => NexusRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -80,6 +92,8 @@ export interface FileRoutesByFullPath {
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/prints': typeof AdminPrintsRoute
   '/admin/tools': typeof AdminToolsRoute
+  '/nexus/approvals': typeof NexusApprovalsRoute
+  '/nexus/items': typeof NexusItemsRoute
   '/admin/': typeof AdminIndexRoute
   '/nexus/': typeof NexusIndexRoute
 }
@@ -90,6 +104,8 @@ export interface FileRoutesByTo {
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/prints': typeof AdminPrintsRoute
   '/admin/tools': typeof AdminToolsRoute
+  '/nexus/approvals': typeof NexusApprovalsRoute
+  '/nexus/items': typeof NexusItemsRoute
   '/admin': typeof AdminIndexRoute
   '/nexus': typeof NexusIndexRoute
 }
@@ -103,6 +119,8 @@ export interface FileRoutesById {
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/prints': typeof AdminPrintsRoute
   '/admin/tools': typeof AdminToolsRoute
+  '/nexus/approvals': typeof NexusApprovalsRoute
+  '/nexus/items': typeof NexusItemsRoute
   '/admin/': typeof AdminIndexRoute
   '/nexus/': typeof NexusIndexRoute
 }
@@ -117,6 +135,8 @@ export interface FileRouteTypes {
     | '/admin/orders'
     | '/admin/prints'
     | '/admin/tools'
+    | '/nexus/approvals'
+    | '/nexus/items'
     | '/admin/'
     | '/nexus/'
   fileRoutesByTo: FileRoutesByTo
@@ -127,6 +147,8 @@ export interface FileRouteTypes {
     | '/admin/orders'
     | '/admin/prints'
     | '/admin/tools'
+    | '/nexus/approvals'
+    | '/nexus/items'
     | '/admin'
     | '/nexus'
   id:
@@ -139,6 +161,8 @@ export interface FileRouteTypes {
     | '/admin/orders'
     | '/admin/prints'
     | '/admin/tools'
+    | '/nexus/approvals'
+    | '/nexus/items'
     | '/admin/'
     | '/nexus/'
   fileRoutesById: FileRoutesById
@@ -222,6 +246,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NexusIndexRouteImport
       parentRoute: typeof NexusRoute
     }
+    '/nexus/approvals': {
+      id: '/nexus/approvals'
+      path: '/approvals'
+      fullPath: '/nexus/approvals'
+      preLoaderRoute: typeof NexusApprovalsRouteImport
+      parentRoute: typeof NexusRoute
+    }
+    '/nexus/items': {
+      id: '/nexus/items'
+      path: '/items'
+      fullPath: '/nexus/items'
+      preLoaderRoute: typeof NexusItemsRouteImport
+      parentRoute: typeof NexusRoute
+    }
   }
 }
 
@@ -244,10 +282,14 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface NexusRouteChildren {
+  NexusApprovalsRoute: typeof NexusApprovalsRoute
+  NexusItemsRoute: typeof NexusItemsRoute
   NexusIndexRoute: typeof NexusIndexRoute
 }
 
 const NexusRouteChildren: NexusRouteChildren = {
+  NexusApprovalsRoute: NexusApprovalsRoute,
+  NexusItemsRoute: NexusItemsRoute,
   NexusIndexRoute: NexusIndexRoute,
 }
 
