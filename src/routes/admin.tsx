@@ -12,6 +12,7 @@ function AdminLayout() {
     { to: "/admin/prints", label: "SamFox Prints" },
     { to: "/admin/kidswear", label: "Bashedi Kidswear" },
     { to: "/admin/tools", label: "Data Tools" },
+    { to: "/nexus", label: "HotStack Nexus" },
   ];
   return (
     <div className="min-h-svh bg-background text-foreground">

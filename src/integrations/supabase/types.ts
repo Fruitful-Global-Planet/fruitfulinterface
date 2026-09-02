@@ -197,6 +197,117 @@ export type Database = {
         }
         Relationships: []
       }
+      nexus_approval_requests: {
+        Row: {
+          amount_zar_cents: number
+          channel: string
+          contact_phone: string
+          created_at: string
+          created_by: string | null
+          decided_at: string | null
+          decided_by: string | null
+          id: string
+          notes: string
+          qty: number
+          ref: string
+          request_type: string
+          status: string
+          store_name: string
+        }
+        Insert: {
+          amount_zar_cents?: number
+          channel?: string
+          contact_phone?: string
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          notes?: string
+          qty?: number
+          ref: string
+          request_type?: string
+          status?: string
+          store_name: string
+        }
+        Update: {
+          amount_zar_cents?: number
+          channel?: string
+          contact_phone?: string
+          created_at?: string
+          created_by?: string | null
+          decided_at?: string | null
+          decided_by?: string | null
+          id?: string
+          notes?: string
+          qty?: number
+          ref?: string
+          request_type?: string
+          status?: string
+          store_name?: string
+        }
+        Relationships: []
+      }
+      nexus_items: {
+        Row: {
+          barcode: string | null
+          carton_qty: number
+          container_config: string
+          cost_price_excl_vat_cents: number
+          created_at: string
+          description: string
+          id: string
+          is_active: boolean
+          item_code: string
+          logistics_allocation_cents: number
+          name: string
+          profile_length_mm: number
+          selling_price_excl_vat_cents: number
+          sort_order: number
+          stock: number
+          updated_at: string
+          vat_rate: number
+        }
+        Insert: {
+          barcode?: string | null
+          carton_qty?: number
+          container_config?: string
+          cost_price_excl_vat_cents?: number
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          item_code: string
+          logistics_allocation_cents?: number
+          name?: string
+          profile_length_mm?: number
+          selling_price_excl_vat_cents?: number
+          sort_order?: number
+          stock?: number
+          updated_at?: string
+          vat_rate?: number
+        }
+        Update: {
+          barcode?: string | null
+          carton_qty?: number
+          container_config?: string
+          cost_price_excl_vat_cents?: number
+          created_at?: string
+          description?: string
+          id?: string
+          is_active?: boolean
+          item_code?: string
+          logistics_allocation_cents?: number
+          name?: string
+          profile_length_mm?: number
+          selling_price_excl_vat_cents?: number
+          sort_order?: number
+          stock?: number
+          updated_at?: string
+          vat_rate?: number
+        }
+        Relationships: []
+      }
       samfox_prints: {
         Row: {
           barcode: string | null
