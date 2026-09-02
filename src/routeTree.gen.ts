@@ -12,11 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as BrandRouteImport } from './routes/brand'
+import { Route as NexusRouteImport } from './routes/nexus'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminKidswearRouteImport } from './routes/admin.kidswear'
 import { Route as AdminOrdersRouteImport } from './routes/admin.orders'
 import { Route as AdminPrintsRouteImport } from './routes/admin.prints'
 import { Route as AdminToolsRouteImport } from './routes/admin.tools'
+import { Route as NexusIndexRouteImport } from './routes/nexus.index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -31,6 +33,11 @@ const AdminRoute = AdminRouteImport.update({
 const BrandRoute = BrandRouteImport.update({
   id: '/brand',
   path: '/brand',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NexusRoute = NexusRouteImport.update({
+  id: '/nexus',
+  path: '/nexus',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -58,16 +65,23 @@ const AdminToolsRoute = AdminToolsRouteImport.update({
   path: '/tools',
   getParentRoute: () => AdminRoute,
 } as any)
+const NexusIndexRoute = NexusIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => NexusRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/brand': typeof BrandRoute
+  '/nexus': typeof NexusRouteWithChildren
   '/admin/kidswear': typeof AdminKidswearRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/prints': typeof AdminPrintsRoute
   '/admin/tools': typeof AdminToolsRoute
   '/admin/': typeof AdminIndexRoute
+  '/nexus/': typeof NexusIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -77,17 +91,20 @@ export interface FileRoutesByTo {
   '/admin/prints': typeof AdminPrintsRoute
   '/admin/tools': typeof AdminToolsRoute
   '/admin': typeof AdminIndexRoute
+  '/nexus': typeof NexusIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
   '/brand': typeof BrandRoute
+  '/nexus': typeof NexusRouteWithChildren
   '/admin/kidswear': typeof AdminKidswearRoute
   '/admin/orders': typeof AdminOrdersRoute
   '/admin/prints': typeof AdminPrintsRoute
   '/admin/tools': typeof AdminToolsRoute
   '/admin/': typeof AdminIndexRoute
+  '/nexus/': typeof NexusIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -95,11 +112,13 @@ export interface FileRouteTypes {
     | '/'
     | '/admin'
     | '/brand'
+    | '/nexus'
     | '/admin/kidswear'
     | '/admin/orders'
     | '/admin/prints'
     | '/admin/tools'
     | '/admin/'
+    | '/nexus/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -109,22 +128,26 @@ export interface FileRouteTypes {
     | '/admin/prints'
     | '/admin/tools'
     | '/admin'
+    | '/nexus'
   id:
     | '__root__'
     | '/'
     | '/admin'
     | '/brand'
+    | '/nexus'
     | '/admin/kidswear'
     | '/admin/orders'
     | '/admin/prints'
     | '/admin/tools'
     | '/admin/'
+    | '/nexus/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
   BrandRoute: typeof BrandRoute
+  NexusRoute: typeof NexusRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -148,6 +171,13 @@ declare module '@tanstack/react-router' {
       path: '/brand'
       fullPath: '/brand'
       preLoaderRoute: typeof BrandRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/nexus': {
+      id: '/nexus'
+      path: '/nexus'
+      fullPath: '/nexus'
+      preLoaderRoute: typeof NexusRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/': {
@@ -185,6 +215,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminToolsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/nexus/': {
+      id: '/nexus/'
+      path: '/'
+      fullPath: '/nexus/'
+      preLoaderRoute: typeof NexusIndexRouteImport
+      parentRoute: typeof NexusRoute
+    }
   }
 }
 
@@ -206,10 +243,21 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface NexusRouteChildren {
+  NexusIndexRoute: typeof NexusIndexRoute
+}
+
+const NexusRouteChildren: NexusRouteChildren = {
+  NexusIndexRoute: NexusIndexRoute,
+}
+
+const NexusRouteWithChildren = NexusRoute._addFileChildren(NexusRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
   BrandRoute: BrandRoute,
+  NexusRoute: NexusRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
