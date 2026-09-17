@@ -1,63 +1,44 @@
-# Fruitful Interface (Kiosk POS)
+# Banimal 2026: Global Release Master (Amazon & Takealot)
 
-## Overview
-The **Fruitful Interface** is a globally-designed, McDonald's-style self-service touchscreen POS system. It is built using **TanStack Start** (SSR) and React 19, optimized for high-performance kiosk environments with a focus on ease of use and rapid transactions: *"Shop local. Pay fast. Grow good."*
+Comprehensive documentation for the production deployment of the **Banimal** creature-wear product line (27 items).
 
-## Stack
-- **Framework:** TanStack Start (Full-stack React framework with SSR).
-- **Frontend:** React 19, Vite, Tailwind CSS 4, Radix UI, Lucide icons.
-- **Backend/DB:** Supabase (Database, Auth, Storage, and Edge Functions).
-- **Runtimes:** Node.js (v22 recommended for builds) or Bun.
-- **Payments:** Paystack Integration (ZAR) with server-side verification.
-- **Testing:** Playwright e2e tests for kiosk scroller and responsive layout.
+## 📊 Release Overview
+*   **Total Items**: 27 (Babygrows & Bibs)
+*   **Target Channels**: Amazon EU (Euros), Takealot ZAR (ZAR), Fruitful Portal (Kiosk)
+*   **Master SKU Map**: [master_map.py](master_map.py) (Source of Truth)
 
-## Key Features
-- **Kiosk Journey:** Fully optimized customer flow: Attractor Screen → Browse → Cart → Secure Payment → Success.
-- **Live Catalog:** Real-time data synchronization with Supabase for flagship ranges:
-  - **Bashedi Kidswear:** Searchable, filterable catalog with full price breakdowns.
-  - **SamFox Prints:** Curated art gallery with live stock management.
-  - **Grand Machadlela Paintings:** Integration with the Grand paintings collection.
-- **Admin Portal:** Secure management interface for:
-  - **Order Tracking:** Real-time list of sales with status and provider tracking.
-  - **Inventory CRUD:** Product editors with automated price calculators (Cost × Markup × VAT).
-  - **Bulk Import:** CSV-based catalog updates for high-volume inventory management.
-- **Global Design:** Portrait-first kiosk layout with touch-optimized targets, branded keyframes, and specialized scroll-position memory.
-- **Data Tools:** Integrated server-side utilities via API Ninjas (QR/Barcode generation, VAT validation, etc.).
+## 📁 Repository Structure & Workflow
+We use a **"Branch-per-Item"** release strategy in the `fruitfulinterface` repository to ensure granular metadata review and CI/CD stability.
 
-## Getting Started
+*   **Repository**: `https://github.com/Fruitful-Global-Planet/fruitfulinterface.git`
+*   **Workflow**:
+    1.  Individual SQL seed files generated in `item_releases/`.
+    2.  Unique branch created for each SKU (`release/banimal-bg-01`, etc.).
+    3.  Individual Pull Requests (PRs) opened for metadata injection into Supabase.
 
-### Prerequisites
-- Bun (recommended) or Node.js (v22+)
-- A Supabase Project with the required migrations applied.
+## 🖼️ Asset Compliance
+All product visuals are locked and verified for e-commerce compliance.
+*   **Dimensions**: 2000x2000px (Amazon Zoom Compliant)
+*   **Format**: High-fidelity JPG
+*   **Local Directory**: `amazon-images/`
+*   **DB Mapping**: Mapped to `public.bashedi_kidswear` in Supabase project `poyxundlvczciihdrkkk`.
 
-### Environment Setup
-Configure your `.env` file with the following:
-```env
-# Supabase
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_service_key
+## 📦 Logistics & Packaging
+*   **Model**: FBA "Singles to Bulk" (Bale/Carton Palletization).
+*   **Weights**:
+    *   Short-Sleeve: ~50g per unit
+    *   Long-Sleeve (No-leg): ~40g per unit
+    *   Long-Sleeve (Footed): ~25g per unit
+*   **Shipping**: Integrated with BobGo for SA distribution (Account unfreeze pending).
 
-# Payments
-VITE_PAYSTACK_PUBLIC_KEY=pk_test_...
-PAYSTACK_SECRET_KEY=sk_test_...
+## 🛠️ Key Scripts
+*   `gen_item_sql.py`: Generates the individual SQL releases.
+*   `verify_img_release.py`: Audits image resolutions against e-commerce standards.
+*   `gen_turnkey.py`: Produces the distribution-ready HTML summaries for partners.
 
-# Utilities
-API_NINJAS_KEY=your_api_ninjas_key
-```
-
-### Installation
-```bash
-bun install
-```
-
-### Development
-```bash
-bun run dev
-```
-
-## Architecture
-The project follows a "Think Global" paradigm, abstracting currency, tax, and payment methods to allow for rapid adaptation to new markets while maintaining a consistent brand experience across all kiosks.
+## 🏁 Current Status: 🟢 Metadata Ready
+All 27 item PRs are currently **Open** on GitHub for final review.
+Fresh GS1 Barcodes are pending final allocation to the 59 size-SKUs.
 
 ---
-*Maintained by Accio Agent for Fruitful Global Planet.*
+*Created by Accio Work Assistant - September 17, 2026*
