@@ -1,0 +1,180 @@
+name: Banimal ZIP → Vercel Deploy
+
+# Drop a new Perplexity-built ZIP into builds/ and push.
+# This action extracts it, strips the Perplexity dev script,
+# patches canonical URLs, and commits the result to dist/.
+# Vercel then auto-deploys from main on the subsequent push.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'builds/*.zip'
+  workflow_dispatch:
+    inputs:
+      zip_filename:
+        description: 'ZIP filename inside builds/ (e.g. banimal3.zip). Leave blank to use the newest.'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  extract-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve ZIP
+        id: zip
+        run: |
+          INPUT="${{ github.event.inputs.zip_filename }}"
+          if [ -n "$INPUT" ]; then
+            ZIP="builds/$INPUT"
+          else
+            ZIP=$(ls builds/*.zip 2>/dev/null | sort -V | tail -1)
+          fi
+          if [ -z "$ZIP" ] || [ ! -f "$ZIP" ]; then
+            echo "::error::No ZIP found in builds/"
+            exit 1
+          fi
+          echo "path=$ZIP" >> $GITHUB_OUTPUT
+          echo "name=$(basename "$ZIP" .zip)" >> $GITHUB_OUTPUT
+          echo "Using: $ZIP"
+
+      - name: Save existing dist/ defaults
+        run: |
+          mkdir -p _defaults
+          for f in sw.js manifest.json robots.txt sitemap.xml og-image.png bib.html; do
+            [ -f "dist/$f" ] && cp "dist/$f" "_defaults/$f" || true
+          done
+
+      - name: Extract ZIP into dist/
+        run: |
+          rm -rf _extracted
+          mkdir _extracted
+          unzip -o "${{ steps.zip.outputs.path }}" -d _extracted/
+          # Handle single-top-level-dir ZIPs
+          COUNT=$(ls _extracted/ | wc -l)
+          FIRST=$(ls _extracted/ | head -1)
+          if [ "$COUNT" -eq 1 ] && [ -d "_extracted/$FIRST" ]; then
+            SRC="_extracted/$FIRST"
+          else
+            SRC="_extracted"
+          fi
+          rsync -a "$SRC/" dist/
+          rm -rf _extracted
+
+      - name: Restore dist/ defaults for any files not in ZIP
+        run: |
+          for f in sw.js manifest.json robots.txt sitemap.xml og-image.png bib.html; do
+            if [ ! -f "dist/$f" ] && [ -f "_defaults/$f" ]; then
+              cp "_defaults/$f" "dist/$f"
+              echo "Restored: dist/$f"
+            fi
+          done
+          rm -rf _defaults
+
+      - name: Strip Perplexity inline-edit dev script
+        run: |
+          python3 - <<'PYEOF'
+          import re, pathlib
+          p = pathlib.Path('dist/index.html')
+          html = p.read_text(encoding='utf-8')
+          before = len(html)
+          html = re.sub(
+              r'\n?<script\s+data-pplx-inline-edit[^>]*>.*?</script>',
+              '',
+              html,
+              flags=re.DOTALL
+          )
+          p.write_text(html, encoding='utf-8')
+          print(f'Stripped {before - len(html)} bytes of Perplexity script.')
+          PYEOF
+
+      - name: Patch index.html — canonical + manifest + SW
+        run: |
+          python3 - <<'PYEOF'
+          import re, pathlib
+          p = pathlib.Path('dist/index.html')
+          html = p.read_text(encoding='utf-8')
+
+          # Canonical URL → banimal.faa.zone
+          html = re.sub(
+              r'(href="https://banimal\.co\.za/?")',
+              'href="https://banimal.faa.zone/"',
+              html
+          )
+          html = re.sub(
+              r'(content="https://banimal\.co\.za/?")',
+              'content="https://banimal.faa.zone/"',
+              html
+          )
+
+          # Manifest link
+          if 'rel="manifest"' not in html:
+              html = html.replace(
+                  '</head>',
+                  '    <link rel="manifest" href="/manifest.json" />\n  </head>'
+              )
+
+          # Service worker registration
+          sw = '''  <script>\n    if (\'serviceWorker\' in navigator) {\n      window.addEventListener(\'load\', () => {\n        navigator.serviceWorker.register(\'/sw.js\').catch(() => {});\n      });\n    }\n  </script>'''
+          if 'serviceWorker' not in html:
+              html = html.replace('</body>', sw + '\n  </body>')
+
+          p.write_text(html, encoding='utf-8')
+          print('Patched index.html')
+          PYEOF
+
+      - name: Update vercel.json — serve assets from repo (no proxy)
+        run: |
+          cat > vercel.json << 'JSON'
+          {
+            "buildCommand": "echo 'pre-built Banimal3 — no build step'",
+            "outputDirectory": "dist",
+            "rewrites": [
+              {
+                "source": "/((?!api|bib|sw\\.js|manifest\\.json|robots\\.txt|sitemap\\.xml|og-image\\.png|favicon|icon|apple-touch).*)",
+                "destination": "/index.html"
+              }
+            ],
+            "headers": [
+              {
+                "source": "/sw.js",
+                "headers": [
+                  { "key": "Service-Worker-Allowed", "value": "/" },
+                  { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
+                ]
+              },
+              {
+                "source": "/assets/(.*)",
+                "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+              },
+              {
+                "source": "/(.*)",
+                "headers": [
+                  { "key": "X-Content-Type-Options", "value": "nosniff" },
+                  { "key": "X-Frame-Options", "value": "DENY" },
+                  { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" }
+                ]
+              }
+            ]
+          }
+          JSON
+
+      - name: Commit and push to main
+        run: |
+          git config user.name "banimal-deploy[bot]"
+          git config user.email "deploy@banimal.faa.zone"
+          git add dist/ vercel.json
+          if git diff --staged --quiet; then
+            echo "No changes — build is already up to date."
+          else
+            git commit -m "deploy: Banimal3 build from ${{ steps.zip.outputs.name }}"
+            git push origin main
+          fi

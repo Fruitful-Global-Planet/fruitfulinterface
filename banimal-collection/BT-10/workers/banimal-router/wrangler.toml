@@ -1,0 +1,76 @@
+name            = "banimal-router"
+main            = "index.js"
+compatibility_date  = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+ENVIRONMENT       = "production"
+BOBGO_FROM_POSTAL = "0044"
+
+# ── Secrets (wrangler secret put <NAME>) ─────────────────────────────────────
+#   PAYSTACK_SECRET_KEY   — from paystack.com/business/settings
+#   CAPITECPAY_SECRET     — from CapitecPay merchant portal
+#   BOBGO_API_KEY          — from app.bobgo.co.za/settings/api
+#   EXCHANGE_RATE_API_KEY  — from exchangerate-api.com
+#   RESEND_API_KEY         — from resend.com (digital download emails)
+#   FAA_ETH_ADDRESS / FAA_BTC_ADDRESS / FAA_USDT_ADDRESS / FAA_XRP_ADDRESS
+#
+#   Social sign-in (see lib/oauth.js) — each pair is optional; a provider
+#   with no client ID configured just soft-fails at /auth/{provider}/start
+#   instead of erroring, so these can be added one at a time:
+#   GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET       — console.cloud.google.com credentials
+#   FACEBOOK_APP_ID / FACEBOOK_APP_SECRET         — developers.facebook.com/apps
+#   APPLE_CLIENT_ID / APPLE_TEAM_ID / APPLE_KEY_ID / APPLE_PRIVATE_KEY
+#     — developer.apple.com/account: APPLE_CLIENT_ID is the Services ID,
+#       APPLE_PRIVATE_KEY is the full contents of the downloaded .p8 key file
+#   GITHUB_CLIENT_ID / GITHUB_CLIENT_SECRET       — github.com/settings/developers
+#   MICROSOFT_CLIENT_ID / MICROSOFT_CLIENT_SECRET — entra.microsoft.com app registrations
+#   TWITTER_CLIENT_ID / TWITTER_CLIENT_SECRET     — developer.twitter.com, OAuth 2.0 app
+
+[[kv_namespaces]]
+binding = "BANIMAL_KV"
+id      = "b94b5f024375483abd194d7a79538d36"
+# lib/oauth.js also uses this same namespace for auth session/state/email-user
+# records (session:*, oauth:state:*, user:email:*) rather than provisioning a
+# separate BANIMAL_AUTH_KV — no live Cloudflare account access to create a
+# new KV namespace from here. Splitting it out later is a one-line change.
+
+[[routes]]
+pattern  = "banimal.co.za/api/*"
+zone_name = "banimal.co.za"
+
+[[routes]]
+pattern  = "banimal.co.za/webhooks/*"
+zone_name = "banimal.co.za"
+
+[[routes]]
+pattern  = "banimal.co.za/port/5000/*"
+zone_name = "banimal.co.za"
+
+[[routes]]
+pattern  = "banimal.co.za/assets/*"
+zone_name = "banimal.co.za"
+
+[[routes]]
+pattern  = "www.banimal.co.za/api/*"
+zone_name = "banimal.co.za"
+
+[[routes]]
+pattern  = "www.banimal.co.za/webhooks/*"
+zone_name = "banimal.co.za"
+
+[[routes]]
+pattern  = "www.banimal.co.za/port/5000/*"
+zone_name = "banimal.co.za"
+
+[[routes]]
+pattern  = "www.banimal.co.za/assets/*"
+zone_name = "banimal.co.za"
+
+[[routes]]
+pattern  = "banimal.co.za/auth/*"
+zone_name = "banimal.co.za"
+
+[[routes]]
+pattern  = "www.banimal.co.za/auth/*"
+zone_name = "banimal.co.za"

@@ -1,0 +1,7 @@
+name            = "banimal-applepay-verify"
+main            = "index.js"
+compatibility_date = "2024-09-23"
+
+[[routes]]
+pattern  = "banimal.co.za/.well-known/apple-developer-merchantid-domain-association"
+zone_name = "banimal.co.za"

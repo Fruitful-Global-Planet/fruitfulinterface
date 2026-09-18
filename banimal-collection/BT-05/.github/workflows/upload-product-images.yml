@@ -1,0 +1,18 @@
+name: Upload Product Images to Paystack
+on:
+  workflow_dispatch:
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install deps
+        run: npm install node-fetch form-data
+      - name: Upload images to Paystack
+        run: node scripts/upload-product-images.js
+        env:
+          PAYSTACK_SECRET_KEY: ${{ secrets.PAYSTACK_SECRET_KEY }}
+
