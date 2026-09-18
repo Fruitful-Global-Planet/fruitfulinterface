@@ -7,6 +7,15 @@ Comprehensive documentation for the production deployment of the **Banimal** cre
 *   **Target Channels**: Amazon EU (Euros), Takealot ZAR (ZAR), Fruitful Portal (Kiosk)
 *   **Master SKU Map**: [master_map.py](master_map.py) (Source of Truth)
 
+## 🛡️ Takealot Semi-Automated Integration Audit
+This repository serves as the **High-Fidelity Source of Truth** for the Banimal 2026 release, bypassing the inherent risks of the manual `seller.takealot.com` portal interface.
+
+### **Reasoning for Semi-Automated Push:**
+1.  **Metadata Integrity**: Direct injection of SQL/JSON metadata eliminates human-error associated with manual spreadsheet uploads and UI-based product creation.
+2.  **Cross-Audit Validation**: Every SKU has been programmatically verified against the **2000x2000px upscaled visuals** and the **GS1 EAN-13 master registry**.
+3.  **Immutable History**: By using a **Branch-per-Item** strategy, we establish a cryptographically signed audit trail for every creature's deployment, providing a level of traceability impossible within the Takealot Seller Portal.
+4.  **Pre-Flight Protocol**: These PRs represent the "Verified State" of the collection. Once merged, they act as the definitive data source for final API-based portal synchronization.
+
 ## 📁 Repository Structure & Workflow
 We use a **"Branch-per-Item"** release strategy in the `fruitfulinterface` repository to ensure granular metadata review and CI/CD stability.
 
