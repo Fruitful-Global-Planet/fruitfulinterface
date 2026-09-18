@@ -1,0 +1,39 @@
+{
+  "_note": "INTERNAL USE ONLY — Alibaba supplier references are NOT exposed in any public-facing interface",
+  "products": [
+    {
+      "sku": "GS-K8",
+      "name": "Banimal Premium Stroller GS-K8",
+      "category": "baby-gear",
+      "brand": "Banimal",
+      "currency": "ZAR",
+      "price_retail": 4999.00,
+      "price_wholesale": 2800.00,
+      "supplier": "INTERNAL_REF_ALIBABA_GS-K8",
+      "supplier_exposed": false,
+      "description": "Premium lightweight stroller with reversible seat, UV canopy, and one-click fold.",
+      "variants": [
+        { "color": "Midnight Black", "stock": 0 },
+        { "color": "Sage Green", "stock": 0 },
+        { "color": "Stone White", "stock": 0 }
+      ],
+      "images": [
+          {
+            "url": "https://drive.google.com/thumbnail?id=14SoHG_34k69hCA1pe8eIO5eOmVzcbaR4&sz=w1200",
+            "alt": "Banimal Premium Stroller - Midnight Black, front and side view",
+            "source": "google_drive",
+            "drive_file_id": "14SoHG_34k69hCA1pe8eIO5eOmVzcbaR4",
+            "primary": true
+          }
+        ],
+      "paystack_product_id": "2576183",
+      "paystack_payment_link": "https://paystack.com/buy/banimal-premium-stroller-gs-k8-ycfsaj",
+      "paystack_slug": "banimal-premium-stroller-gs-k8-ycfsaj",
+      "delivery": {
+        "south_africa": { "fee_zar": 150, "carrier": "TBD" }
+      },
+      "zoho_product_id": null,
+              "status": "active"
+    }
+  ]
+}
