@@ -1,0 +1,29 @@
+name: Deploy Seedwave Router Worker
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'workers/seedwave-router/**'
+
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to Cloudflare Workers
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Deploy Seedwave Router
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          workingDirectory: 'workers/seedwave-router'
+          command: deploy --env production
