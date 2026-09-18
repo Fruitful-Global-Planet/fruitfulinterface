@@ -1,0 +1,65 @@
+{
+  "_license": "FPSL v1.0 - Fruitful Holdings (Pty) Ltd - vault@faa.zone",
+  "_notice": "Proprietary config. Use constitutes acceptance of LICENSE terms from first interaction.",
+
+  "brand": "toynest",
+  "display_name": "ToyNest",
+  "tagline": "Smart toys. Thoughtful play.",
+  "domain": "toynest.seedwave.faa.zone",
+  "sector": "seedwave",
+  "parent_domain": "seedwave.faa.zone",
+
+  "theme": {
+    "primary": "#2D7D46",
+    "secondary": "#F5F0E8",
+    "accent": "#F5F0E8",
+    "background": "#F5F0E8",
+    "text": "#1A1A1A",
+    "font_heading": "Inter",
+    "font_body": "Inter"
+  },
+
+  "phases": {
+    "dns_live": false,
+    "worker_routing_live": false,
+    "catalog_live": false,
+    "paystack_live": false,
+    "zoho_crm_live": false,
+    "zoho_campaigns_live": false,
+    "public_launch": false
+  },
+
+  "routing": {
+    "hostname_pattern": "toynest.seedwave.faa.zone",
+    "kv_key": "brand:toynest",
+    "worker": "seedwave-router",
+    "fallback_origin": null
+  },
+
+  "catalog": {
+    "currency": "ZAR",
+    "payment_provider": "paystack",
+    "products": []
+  },
+
+  "zoho": {
+    "crm_account": null,
+    "campaigns_list": null,
+    "invoice_prefix": "TN"
+  },
+
+  "smart_toys": {
+    "note": "ToyNest product catalog connects to the smart-toys work. Products TBD.",
+    "sku_prefix": "TN-",
+    "categories": ["educational", "stem", "interactive", "outdoor"]
+  },
+
+  "meta": {
+    "created": "2026-06-16",
+    "created_by": "heyns1000",
+    "status": "draft",
+    "version": "0.1.0",
+    "repo": "github.com/Fruitful-Global-Planet/banimal-global-loop",
+    "config_path": "configs/toynest.seedwave.json"
+  }
+}
