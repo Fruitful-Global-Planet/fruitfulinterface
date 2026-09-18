@@ -1,0 +1,70 @@
+{
+  "_comment": "Copy this file to {brand}.json and fill in the values. Filename = brand slug = subdomain.",
+  "brand": {
+    "slug": "{brand}",
+    "name": "Brand Display Name",
+    "tagline": "One-line brand tagline",
+    "description": "Short brand description for storefront meta",
+    "category": "e.g. baby, fashion, wellness, food, tech",
+    "founded": "YYYY",
+    "origin": "South Africa"
+  },
+  "storefront": {
+    "subdomain": "{brand}.seedwave.faa.zone",
+    "custom_domain": "",
+    "theme": "default",
+    "primary_color": "#000000",
+    "secondary_color": "#ffffff",
+    "logo_url": "",
+    "favicon_url": ""
+  },
+  "owner": {
+    "name": "",
+    "email": "",
+    "phone": "",
+    "entity": ""
+  },
+  "payments": {
+    "paystack_subaccount_code": "",
+    "revenue_split_percent": 80,
+    "platform_fee_percent": 20,
+    "currency": "ZAR",
+    "multi_currency": false
+  },
+  "integrations": {
+    "zoho_crm_account_id": "",
+    "zoho_campaigns_list_id": "",
+    "zoho_invoice_customer_id": "",
+    "zeptomail_from": "noreply@seedwave.faa.zone",
+    "amazon_seller_id": "",
+    "takealot_store_id": "",
+    "pricecheck_offer_id": ""
+  },
+  "catalog": {
+    "product_count": 0,
+    "sku_prefix": "{BRAND}",
+    "products": []
+  },
+  "physical": {
+    "has_physical_products": true,
+    "supplier": "",
+    "warehouse_location": "",
+    "fulfillment_method": "self | dropship | 3PL"
+  },
+  "digital_twin": {
+    "enabled": false,
+    "ledger_hash": "",
+    "nft_collection": ""
+  },
+  "status": "template",
+  "created_at": "",
+  "deployed_at": "",
+  "phases": {
+    "dns_configured": false,
+    "worker_deployed": false,
+    "paystack_subaccount_created": false,
+    "zoho_configured": false,
+    "products_loaded": false,
+    "storefront_live": false
+  }
+}
